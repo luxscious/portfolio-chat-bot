@@ -12,7 +12,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("🔮 This will eventually return a chatbot response"))
 }
 
-func NewRouter() http.Handler {
+func RegisterRoutes() http.Handler {
 	r := chi.NewRouter()
 
 	// 🔐 Global middleware

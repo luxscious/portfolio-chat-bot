@@ -75,23 +75,9 @@ func main() {
 	fmt.Printf("✅ Embedding generated! First 5 values: %v\n", vector[:5])
 
 
-	// Health check endpoint
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "👋 Resume Chatbot backend is running!")
-	})
-
-	// Future endpoint: POST /chat
-	http.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "Only POST allowed", http.StatusMethodNotAllowed)
-			return
-		}
-		fmt.Fprintln(w, "This is where the chatbot response will go.")
-	})
-
 	port := ":8080"	
 	log.Printf("✅ Server started on http://localhost%s\n", port)
-	log.Fatal(http.ListenAndServe(port, nil))
+	log.Fatal(http.ListenAndServe(port, RegisterRoutes()))
 }
 
 
