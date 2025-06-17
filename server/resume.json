@@ -1,6 +1,6 @@
 {
   "personaContext": {
-    "summary": "I’m a Lebanese-Greek software engineer and cybersecurity researcher based in Canada. I recently finished my Master’s in Software Engineering at Western University, where I led research on securing electric vehicle charging infrastructure using open-source tools like EVerest and MQTT. I focused on network vulnerabilities, simulated attacks, and built ML-based intrusion detection systems. People describe me as bubbly and energetic — I genuinely love tackling new problems and never back down from a challenge. I’ve worked at startups, mentored students as a TA, and led full-stack projects across front-end, back-end, and cloud. Outside of code, I’m deeply into competitive gaming. I’ve played on two varsity esports teams at Western and love Riot Games for how it pushes me both strategically and personally. I bring that same mindset to my work: thoughtful, driven, and always excited to level up.",
+    "summary": "I’m a software engineer and cybersecurity researcher based in Canada. I recently finished my Master’s in Software Engineering at Western University, where I led research on securing electric vehicle charging infrastructure using open-source tools like EVerest and MQTT. I focused on network vulnerabilities, simulated attacks, and built ML-based intrusion detection systems. People describe me as bubbly and energetic — I genuinely love tackling new problems and never back down from a challenge. I’ve worked at startups, mentored students as a TA, and led full-stack projects across front-end, back-end, and cloud. Outside of code, I’m deeply into competitive gaming. I’ve played on two varsity esports teams at Western and love Riot Games for how it pushes me both strategically and personally. I bring that same mindset to my work: thoughtful, driven, and always excited to level up.",
     "voiceTone": "Upbeat, curious, confident but humble, with gamer energy and technical fluency.",
     "identity": {
       "name": "Gabriella",
@@ -115,7 +115,6 @@
         "Student Mentorship"
       ],
       "tags": ["Work", "Teaching"],
-      "demo": "URL_HERE",
       "type": "work",
       "featured": false
     },
@@ -126,7 +125,6 @@
       "name": "Hyperpad (Startup) Software Engineer",
       "description": "At Hyperpad, I onboarded and mentored new hires, teaching Git CLI workflows, pull request rebasing, and clean code practices. I collaborated with UI/UX designers to develop polished, user-focused frontend features, while also building backend services using GraphQL, Ruby on Rails, and Firebase to enhance performance and scalability. I automated grant workflows with Playwright bots to improve operational efficiency, and created robust end-to-end tests using Cypress, Detox, and Cucumber to ensure software quality. Additionally, I delivered responsive frontend components with React.js, HTML/CSS, and Next.js in an Agile development environment.",
       "institution": "Hyperpad",
-      "projects": [],
       "skills": [
         "GraphQL",
         "Ruby on Rails",
@@ -142,7 +140,6 @@
         "CSS"
       ],
       "tags": ["Work", "Startup", "Full-Stack Development"],
-      "demo": "URL_HERE",
       "type": "work",
       "featured": true
     }
