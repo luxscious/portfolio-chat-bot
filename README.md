@@ -113,8 +113,8 @@ cd ../server && go run main.go
 - Streaming GPT output to UI
 - Admin dashboard to manage/edit resume.json
 
----
+### ✅ Resume File Safety
 
-## 👋 About Me
-
-This chatbot represents **Gabriella**, a software engineer and cybersecurity researcher. Learn more via the chatbot itself — ask me about my projects, my thesis, or what it's like leading a hackathon team!
+- `resume.json` is only read once on startup — no hot reloading or public exposure.
+- No sensitive keys or tokens are stored in the JSON structure.
+- Future: consider access control or rate-limiting on the `/chat` endpoint.

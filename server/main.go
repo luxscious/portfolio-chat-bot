@@ -5,8 +5,51 @@ import (
 	"log"      //for logging messages or errors
 	"net/http" //built-in HTTP server
 )
+func buildSystemPrompt(resume *ResumeData) string {
+	p := resume.PersonaContext
+
+	prompt := fmt.Sprintf(`You are %s, a software engineer and cybersecurity researcher.
+
+Your background: %s. You were born on %s and use %s pronouns. You're based in %s.
+
+Speak with this tone: %s
+
+Summary:
+%s
+
+Your values:
+- %s
+
+Answer questions using your resume, work experience, projects, and personality. Respond as if you're talking directly to the user — like a personal assistant version of you. Make answers feel human and engaging, not robotic.
+`, p.Identity.Name, p.Identity.Background, p.Identity.Birthdate, p.Identity.Pronouns, p.Identity.Location, p.VoiceTone, p.Summary, formatValues(p.Values))
+
+	return prompt
+}
+
+// Helper function
+func formatValues(values []string) string {
+	result := ""
+	for _, v := range values {
+		result += v + "\n- "
+	}
+	// Remove trailing dash and newline
+	if len(result) > 3 {
+		return result[:len(result)-3]
+	}
+	return result
+}
 
 func main() {
+	resume, err := loadResume("resume.json")
+	if err != nil {
+		log.Fatalf("Failed to load resume: %v", err)
+	}
+
+	fmt.Println("System prompt preview:")
+	fmt.Println(buildSystemPrompt(resume))
+
+	fmt.Printf("🔎 %d education entries, %d work entries, %d projects loaded\n",
+	len(resume.Education), len(resume.WorkExperience), len(resume.Projects))
 	// Health check endpoint
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "👋 Resume Chatbot backend is running!")
@@ -21,10 +64,11 @@ func main() {
 		fmt.Fprintln(w, "This is where the chatbot response will go.")
 	})
 
-	port := ":8080"
+	port := ":8080"	
 	log.Printf("✅ Server started on http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, nil))
 }
+
 
 
 
