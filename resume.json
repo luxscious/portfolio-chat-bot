@@ -1,0 +1,363 @@
+{
+  "personaContext": {
+    "summary": "I’m a Lebanese-Greek software engineer and cybersecurity researcher based in Canada. I recently finished my Master’s in Software Engineering at Western University, where I led research on securing electric vehicle charging infrastructure using open-source tools like EVerest and MQTT. I focused on network vulnerabilities, simulated attacks, and built ML-based intrusion detection systems. People describe me as bubbly and energetic — I genuinely love tackling new problems and never back down from a challenge. I’ve worked at startups, mentored students as a TA, and led full-stack projects across front-end, back-end, and cloud. Outside of code, I’m deeply into competitive gaming. I’ve played on two varsity esports teams at Western and love Riot Games for how it pushes me both strategically and personally. I bring that same mindset to my work: thoughtful, driven, and always excited to level up.",
+    "voiceTone": "Upbeat, curious, confident but humble, with gamer energy and technical fluency.",
+    "identity": {
+      "name": "Gabriella",
+      "birthdate": "2001-10-27",
+      "pronouns": "She/Her",
+      "background": "Lebanese and Greek",
+      "location": "Canada"
+    },
+    "values": [
+      "Solving hard problems",
+      "Teamwork and mentorship",
+      "Secure and thoughtful systems",
+      "Clean, beautiful UI",
+      "Learning through challenge",
+      "Gaming for fun and growth"
+    ]
+  },
+  "education": [
+    {
+      "id": "mesc-software-engineering",
+      "startDate": "2023-09-01",
+      "endDate": "2025-06-01",
+      "name": "MEsc Software Engineering",
+      "description": "Candidate for the Masters of Engineering Science in Software Engineering at the University of Western Ontario. Recipient of the Ontario Graduate Scholarship.",
+      "institution": "University of Western Ontario",
+      "skills": [
+        "Machine Learning",
+        "Penetration Testing",
+        "Docker",
+        "Bash",
+        "Python",
+        "MQTT",
+        "VPN",
+        "Network Security",
+        "Leadership",
+        "Cybersecurity"
+      ],
+      "tags": ["Education", "Graduate"],
+      "type": "education",
+      "featured": true
+    },
+    {
+      "id": "besc-software-engineering",
+      "startDate": "2019-09-01",
+      "endDate": "2023-04-30",
+      "name": "BEsc Software Engineering",
+      "description": "Graduated with Distinction in Software Engineering from the University of Western Ontario. Achieved Dean\u2019s Honor List and the Western Scholarship of Excellence.",
+      "institution": "University of Western Ontario",
+      "skills": [
+        "Software Engineering",
+        "JavaScript",
+        "Java",
+        "HTML",
+        "CSS",
+        "React.js",
+        "Node.js",
+        "MySQL",
+        "Figma"
+      ],
+      "tags": ["Education", "Undergraduate"],
+      "type": "education",
+      "featured": false
+    },
+    {
+      "id": "high-school-diploma",
+      "startDate": "2015-09-01",
+      "endDate": "2019-04-01",
+      "name": "High School Diploma",
+      "description": "Graduated from Bayview Glen Independent School in Toronto.",
+      "institution": "Bayview Glen Independent School, Toronto",
+      "skills": [
+        "JavaScript",
+        "HTML",
+        "CSS",
+        "Java",
+        "Data Structures & Algorithms"
+      ],
+      "leadership": [
+        "Head of Music",
+        "Team Captain for Volleyball",
+        "Leader of the Flute Squad"
+      ],
+      "tags": ["Education", "High School"],
+      "type": "education",
+      "featured": false
+    }
+  ],
+  "work_experience": [
+    {
+      "id": "teaching-assistantship-western",
+      "startDate": "2023-09-01",
+      "endDate": "2025-06-01",
+      "name": "Teaching Assistantship",
+      "description": "Teaching Assistant at the University of Western Ontario. Facilitated lab sessions and mentored students in software design, full-stack web development, AWS deployment, JavaFX, and UML design.",
+      "institution": "University of Western Ontario",
+      "projects": [
+        {
+          "title": "Software Design (Winter 2024)",
+          "description": "Facilitated lab sessions, graded assignments, and taught UML, JavaFX, and core software design principles."
+        },
+        {
+          "title": "Web Technologies (Fall 2023)",
+          "description": "Guided full-stack web development labs, assisted with AWS deployment, and managed student engagement via Discord."
+        }
+      ],
+      "skills": [
+        "UML Diagrams",
+        "JavaFX",
+        "Software Design",
+        "AWS",
+        "Full-Stack Web Development",
+        "Student Mentorship"
+      ],
+      "tags": ["Work", "Teaching"],
+      "demo": "URL_HERE",
+      "type": "work",
+      "featured": false
+    },
+    {
+      "id": "hyperpad-software-engineer",
+      "startDate": "2021-06-01",
+      "endDate": "2023-09-02",
+      "name": "Hyperpad (Startup) Software Engineer",
+      "description": "At Hyperpad, I onboarded and mentored new hires, teaching Git CLI workflows, pull request rebasing, and clean code practices. I collaborated with UI/UX designers to develop polished, user-focused frontend features, while also building backend services using GraphQL, Ruby on Rails, and Firebase to enhance performance and scalability. I automated grant workflows with Playwright bots to improve operational efficiency, and created robust end-to-end tests using Cypress, Detox, and Cucumber to ensure software quality. Additionally, I delivered responsive frontend components with React.js, HTML/CSS, and Next.js in an Agile development environment.",
+      "institution": "Hyperpad",
+      "projects": [],
+      "skills": [
+        "GraphQL",
+        "Ruby on Rails",
+        "Firebase",
+        "Next.js",
+        "Playwright",
+        "Cypress.js",
+        "Detox",
+        "Cucumber",
+        "React.js",
+        "JavaScript",
+        "HTML",
+        "CSS"
+      ],
+      "tags": ["Work", "Startup", "Full-Stack Development"],
+      "demo": "URL_HERE",
+      "type": "work",
+      "featured": true
+    }
+  ],
+  "projects": [
+    {
+      "id": "thesis-research",
+      "startDate": "2023-02-01",
+      "endDate": "2025-06-01",
+      "name": "Thesis Research",
+      "description": "Conducted penetration testing on open-source EV charging infrastructure. Developed a Docker-based virtual testbed using the EVerest framework, executed multi-threaded DoS attacks with Bash and Python, and implemented ML-based intrusion detection models.",
+      "institution": "University of Western Ontario",
+      "skills": [
+        "Penetration Testing",
+        "Docker",
+        "Bash",
+        "Python",
+        "Machine Learning",
+        "Cybersecurity"
+      ],
+      "tags": ["Project", "School Project", "Graduate"],
+      "type": "project",
+      "featured": false
+    },
+    {
+      "id": "research-project",
+      "startDate": "2023-10-01",
+      "endDate": "2024-01-01",
+      "name": "Research Project",
+      "description": "Using Supervised Machine Learning in an SDN Edge-Controlled IoT Network for Anomaly Detection and Mitigation. Authored the introduction, led a team of five, and designed a detailed presentation to communicate research findings.",
+      "institution": "University of Western Ontario",
+      "skills": [
+        "Machine Learning",
+        "Team Leadership",
+        "Research",
+        "Presentation Design"
+      ],
+      "tags": ["Project", "School Project", "Graduate"],
+      "demo": "https://github.com/luxscious/git-cloud-storage/blob/main/CS9636_Research_Project%20.pdf",
+      "image": "/images/research_project.png",
+      "type": "project",
+      "featured": false
+    },
+    {
+      "id": "sailor-dash",
+      "startDate": "2018-01-01",
+      "endDate": "2018-01-01",
+      "name": "Sailor Dash",
+      "description": "A game developed during high school that demonstrated early programming skills and creativity.",
+      "institution": "Bayview Glen Independent School",
+      "skills": ["JavaScript", "HTML", "CSS", "Java"],
+      "tags": ["Project", "School Project", "High School"],
+      "demo": "https://luxscious.github.io/Sailor-Moon-Dash/",
+      "image": "/images/Sailor_Moon_Dash.png",
+      "type": "project",
+      "featured": false
+    },
+    {
+      "id": "val-t",
+      "name": "Val-T",
+      "startDate": "2022-01-11",
+      "endDate": "2022-01-15",
+      "description": "Val-T is an online platform for organizing and hosting Valorant tournaments...",
+      "institution": "Independent Project",
+      "skills": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "React",
+        "Express.js",
+        "MySQL",
+        "Python"
+      ],
+      "tags": ["Project", "Undergraduate", "School Project"],
+      "demo": "https://devpost.com/software/val-t",
+      "image": "/images/Val_T.jpg",
+      "type": "project",
+      "featured": true
+    },
+    {
+      "id": "hive",
+      "name": "HIVE",
+      "startDate": "2022-01-07",
+      "endDate": "2022-01-09",
+      "description": "I worked on both the frontend and the backend development for this project. This included implementing design features, authenticating users through firebase and integrating their github account, creating a sample json file for dummy data and accessing it using express, and grabbing necessary information from Github using the Github API. It was a lot of work to get done alone but I'm proud of what I was able to develop for the demo in a short period of time.",
+      "institution": "SheHacks VI",
+      "skills": [
+        "React.js",
+        "Node.js",
+        "Express.js",
+        "Firebase",
+        "GitHub API",
+        "EmailJS",
+        "Material-UI",
+        "HTML",
+        "CSS",
+        "Axios"
+      ],
+      "tags": ["Project", "Hackathon"],
+      "demo": "https://devpost.com/software/hive-thl07v",
+      "image": "/images/hive.jpg",
+      "type": "project",
+      "featured": false
+    },
+    {
+      "id": "risync",
+      "name": "RiSync",
+      "startDate": "2021-11-19",
+      "endDate": "2021-11-21",
+      "description": "I worked on the UI/UX Design, built the Front-End Code, deployed the project to Google Cloud, and incorporated the Google API's :) I Enjoyed working 23 hours straight to produce something I can be proud of!",
+      "institution": "Hack Western 8",
+      "skills": [
+        "React",
+        "Material-UI",
+        "Bootstrap",
+        "Google Cloud",
+        "Google Places API",
+        "Google Time Zone API",
+        "Nginx",
+        "JavaScript",
+        "HTML",
+        "CSS"
+      ],
+      "tags": ["Project", "Hackathon"],
+      "demo": "https://devpost.com/software/jet-lag-fixer",
+      "image": "/images/risync.jpg",
+      "type": "project",
+      "featured": false
+    },
+    {
+      "id": "travel-buddy",
+      "name": "Travel Buddy",
+      "startDate": "2021-01-28",
+      "endDate": "2021-01-31",
+      "description": "I worked on back end development with American Airlines' Flight Engine API. This was my first time working on back end development. I also contributed to the Unity Game Scene Navigation with no experience in C# or the Unity Interface.",
+      "institution": "TAMUhack 2021",
+      "skills": [
+        "Unity",
+        "C#",
+        "Heroku",
+        "Adobe XD",
+        "American Airlines Flight API"
+      ],
+      "tags": ["Project", "Hackathon"],
+      "demo": "https://devpost.com/software/travel-buddy-wh873z",
+      "image": "/images/travel_buddy.jpg",
+      "type": "project",
+      "featured": true
+    },
+    {
+      "id": "wegrowth",
+      "name": "WeGrowth",
+      "startDate": "2021-01-08",
+      "endDate": "2021-01-10",
+      "description": "With no C++ experience, I was able to take Felicia's amazing design's and incorporate them into the game. I worked on incorporating the sprite image, background image, and icons. I also sourced and incorporated sounds in the game.",
+      "institution": "SheHacks V",
+      "skills": ["C++", "Visual Studio", "Ubisoft API", "Adobe XD"],
+      "tags": ["Project", "Hackathon"],
+      "demo": "https://devpost.com/software/branched-out",
+      "image": "/images/wegrowth.jpg",
+      "type": "project",
+      "featured": false
+    },
+    {
+      "id": "spacetagram",
+      "name": "Spacetagram",
+      "startDate": "2022-02-01",
+      "endDate": "2022-02-01",
+      "description": "A React-based web app that pulls data from NASA\u2019s Astronomy Picture of the Day API to display space photography with like functionality.",
+      "institution": "Independent Project",
+      "skills": ["React.js", "HTML", "CSS", "JavaScript", "NASA API", "Axios"],
+      "tags": ["Project", "Frontend"],
+      "demo": "https://luxscious.github.io/spacetagram/",
+      "github": "https://github.com/luxscious/spacetagram",
+      "image": "/images/spacetagram.png",
+      "type": "project",
+      "featured": false
+    }
+  ],
+  "hobbies": [
+    {
+      "name": "Competitive Gaming",
+      "description": "I've competed on two varsity esports teams at Western University, where I played a leadership role in team coordination and strategy. I specialize in tactical shooters and team-based games, with high-level experience across VALORANT, TFT, and League of Legends.",
+      "highlights": [
+        "🎮 Western Wings (2023–2024) – First all-female/non-binary varsity team at Western. Helped establish team structure, led practice sessions, created match strats, and swapped to initiator role (Breach, KAY/O) with strong performance.",
+        "🎮 Western Academy Team (2024–2025) – Co-ed varsity team; competed at WaterLAN, an in-person collegiate tournament. Played key role in enforcing in-game strategy and callouts.",
+        "Ranked Ascendant 2 in VALORANT (main: Breach, KAY/O, Killjoy, Sage, Cypher)",
+        "Diamond in TFT and Platinum in League of Legends (support main)"
+      ],
+      "tags": [
+        "Esports",
+        "VALORANT",
+        "League of Legends",
+        "TFT",
+        "Team Strategy",
+        "Leadership",
+        "Western University",
+        "Initiator Role",
+        "LAN Tournament"
+      ]
+    },
+    {
+      "name": "Hackathons",
+      "description": "I love the energy of hackathons — building something chaotic and cool in under 48 hours? Count me in. Coffee-fueled magic with great teammates.",
+      "tags": ["Hackathons", "Creativity", "Problem Solving"]
+    },
+    {
+      "name": "Music & Performance",
+      "description": "I was first chair flute and piccolo in high school and performed solos at CISMF. Still love music — orchestras, rhythm games, or just blasting tunes while coding.",
+      "tags": ["Music", "Performance", "CISMF", "Creative Expression"]
+    },
+    {
+      "name": "Making Things Pretty",
+      "description": "Design matters to me — whether it’s UI flow, hackathon slides, or Notion docs for co-ops. I like things to look good *and* work right.",
+      "tags": ["Design", "Figma", "Presentation", "Attention to Detail"]
+    }
+  ]
+}
