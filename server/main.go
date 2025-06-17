@@ -6,6 +6,8 @@ import (
 	"log"      //for logging messages or errors
 	"net/http" //built-in HTTP server
 	"text/template"
+
+	"github.com/joho/godotenv"
 )
 func buildSystemPrompt(p PersonaContext) (string, error) {
 	tmpl, err := template.New("prompt").Parse(p.PromptTemplate)
@@ -20,8 +22,34 @@ func buildSystemPrompt(p PersonaContext) (string, error) {
 
 	return buf.String(), nil
 }
+func stringifyResume(resume *ResumeData) string {
+	text := resume.PersonaContext.Summary + "\n\n"
 
+	for _, exp := range resume.WorkExperience {
+		text += fmt.Sprintf("Work: %s – %s\n", exp.Name, exp.Description)
+	}
+
+	for _, edu := range resume.Education {
+		text += fmt.Sprintf("Education: %s – %s\n", edu.Name, edu.Description)
+	}
+
+	for _, proj := range resume.Projects {
+		text += fmt.Sprintf("Project: %s – %s\n", proj.Name, proj.Description)
+	}
+
+	return text
+}
+
+// init our env variables before main is called 
+func init() {
+	err := godotenv.Load("../.env") 
+	if err != nil {
+		log.Println("⚠️  No .env file found — relying on external environment variables.")
+	}
+}
 func main() {
+
+	// Load Resume
 	resume, err := loadResume("resume.json")
 	if err != nil {
 		log.Fatalf("Failed to load resume: %v", err)
@@ -38,9 +66,15 @@ func main() {
 	fmt.Printf("🔎 %d education entries, %d work entries, %d projects loaded\n",
 	len(resume.Education), len(resume.WorkExperience), len(resume.Projects))
 	
-	
-	
-	
+	// Call embedding function
+	resumeText := stringifyResume(resume)
+	vector, err := generateEmbedding(resumeText)
+	if err != nil {
+		log.Fatalf("Embedding failed: %v", err)
+	}
+	fmt.Printf("✅ Embedding generated! First 5 values: %v\n", vector[:5])
+
+
 	// Health check endpoint
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "👋 Resume Chatbot backend is running!")

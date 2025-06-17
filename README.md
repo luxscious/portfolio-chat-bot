@@ -23,15 +23,15 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 └────────┬───────────┘
          │ POST /chat
          ▼
-┌────────────────────┐
-│ 2. Go Backend      │
-│ (API Server)       │
-│                    │
-│ - Loads resume.json│
-│ - Builds prompt    │
-│ - Retrieves resume │
-│   chunks (RAG)     │
-└────────┬───────────┘
+┌──────────────────────────────┐
+│ 2. Go Backend                │
+│ (API Server)                 │
+│                              │
+│ - Loads resume.json          │
+│ - Builds prompt              │
+│ - Generates full resume      │
+│   embedding with OpenAI API  │
+└────────┬─────────────────────┘
          │ API Request
          ▼
 ┌────────────────────┐
@@ -57,6 +57,7 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 
 - **Dynamic Prompting**: GPT responses use my voice, tone, and background
 - **Resume-Driven**: Pulls structured data from `resume.json`
+- **Embeddings**: Generates a full resume vector embedding
 - **Modular & Clean**: Frontend and backend separated
 - **Deployable**: Vercel (frontend), Railway/Render (backend)
 
@@ -70,6 +71,8 @@ resume-chatbot/
 │   └── src/
 ├── server/            # Go backend
 │   ├── main.go
+│   ├── resume.go
+│   ├── embedding.go
 │   └── resume.json
 ├── .env.example       # OpenAI API key and server config
 ├── README.md
@@ -85,7 +88,7 @@ resume-chatbot/
 git clone https://github.com/yourusername/resume-chatbot.git
 ```
 
-2. **Set up your \*\***`.env`\***\* files**
+2. **Set up your `.env` files**
 
 ```bash
 cp .env.example .env
@@ -117,4 +120,5 @@ cd ../server && go run main.go
 
 - `resume.json` is only read once on startup — no hot reloading or public exposure.
 - No sensitive keys or tokens are stored in the JSON structure.
+- Embedding and prompt construction happen securely on the server.
 - Future: consider access control or rate-limiting on the `/chat` endpoint.
