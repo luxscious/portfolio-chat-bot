@@ -29,8 +29,8 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 │                              │
 │ - Loads resume.json          │
 │ - Builds prompt              │
-│ - Generates full resume      │
-│   embedding with OpenAI API  │
+│ - Generates embeddings       │
+│   with OpenAI API            │
 └────────┬─────────────────────┘
          │ API Request
          ▼
@@ -57,7 +57,8 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 
 - **Dynamic Prompting**: GPT responses use my voice, tone, and background
 - **Resume-Driven**: Pulls structured data from `resume.json`
-- **Embeddings**: Generates a full resume vector embedding
+- **Embeddings**: Generates vector embeddings from resume content
+- **CORS Configurable**: Frontend origin is loaded from `.env`
 - **Modular & Clean**: Frontend and backend separated
 - **Deployable**: Vercel (frontend), Railway/Render (backend)
 
@@ -71,6 +72,7 @@ resume-chatbot/
 │   └── src/
 ├── server/            # Go backend
 │   ├── main.go
+│   ├── routes.go
 │   ├── resume.go
 │   ├── embedding.go
 │   └── resume.json
@@ -92,6 +94,13 @@ git clone https://github.com/yourusername/resume-chatbot.git
 
 ```bash
 cp .env.example .env
+```
+
+Make sure `.env` contains:
+
+```env
+OPENAI_API_KEY=your-key-here
+FRONTEND_ORIGIN=http://localhost:5173
 ```
 
 3. **Install frontend dependencies**
@@ -121,4 +130,5 @@ cd ../server && go run main.go
 - `resume.json` is only read once on startup — no hot reloading or public exposure.
 - No sensitive keys or tokens are stored in the JSON structure.
 - Embedding and prompt construction happen securely on the server.
+- CORS settings are loaded from `.env` for flexibility.
 - Future: consider access control or rate-limiting on the `/chat` endpoint.
