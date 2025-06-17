@@ -22,6 +22,7 @@ type PersonaContext struct {
 	VoiceTone string   `json:"voiceTone"`
 	Identity  Identity `json:"identity"`
 	Values    []string `json:"values"`
+	PromptTemplate string   `json:"promptTemplate"`
 }
 
 // Experience block (work, teaching)
