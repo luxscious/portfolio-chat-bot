@@ -12,10 +12,10 @@ import (
 )
 
 type ChatMessage struct {
-	UserID    string    `bson:"user_id"`
-	Role      string    `bson:"role"`
-	Content   string    `bson:"content"`
-	Timestamp time.Time `bson:"timestamp"`
+	UserID    string    `bson:"user_id,omitempty" json:"-"`
+	Role      string    `bson:"role" json:"role"`
+	Content   string    `bson:"content" json:"content"`
+	Timestamp time.Time `bson:"timestamp,omitempty" json:"-"`
 }
 
 var client *mongo.Client
@@ -36,7 +36,6 @@ func InitMongo() {
 	if err != nil {
 		log.Fatalf("❌ Failed to connect to MongoDB: %v", err)
 	}
-
 	collection = client.Database(dbName).Collection(collName)
 	log.Println("✅ Connected to MongoDB")
 }
@@ -66,6 +65,9 @@ func GetMessages(userID string) ([]ChatMessage, error) {
 			return nil, err
 		}
 		results = append(results, msg)
+	}
+	if err := cursor.Err(); err != nil {
+    	return nil, err
 	}
 
 	return results, nil

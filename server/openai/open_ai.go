@@ -1,28 +1,29 @@
-package main
+package openai
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"go-ai/config"
+	"go-ai/db"
 	"io"
 	"net/http"
 )
 
 type OpenAIChatRequest struct {
 	Model    string        `json:"model"`
-	Messages []ChatMessage `json:"messages"`
+	Messages []db.ChatMessage `json:"messages"`
 }
 
 type OpenAIChatResponse struct {
 	Choices []struct {
-		Message ChatMessage `json:"message"`
+		Message db.ChatMessage `json:"message"`
 	} `json:"choices"`
 }
 
 
 // callOpenAI sends messages to OpenAI Chat Completion API
-func callOpenAI(messages []ChatMessage) (string, error) {
+func CallOpenAI(messages []db.ChatMessage) (string, error) {
 	apiKey := config.GetOpenAIKey()
 	reqBody := OpenAIChatRequest{
 		Model:    "gpt-4", 

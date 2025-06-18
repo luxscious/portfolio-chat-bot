@@ -1,4 +1,4 @@
-package main
+package resume
 
 import (
 	"encoding/json"
@@ -59,6 +59,7 @@ type Project struct {
 	Type        string   `json:"type"`
 	Featured    bool     `json:"featured"`
 	Github      string   `json:"github,omitempty"`
+	Placement string `json:"placement,omitempty"` // Only used for hackathons
 }
 
 // Education block
@@ -93,7 +94,7 @@ type ResumeData struct {
 
 
 // loadResume loads and parses resume.json
-func loadResume(path string) (*ResumeData, error) {
+func LoadResume(path string) (*ResumeData, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err

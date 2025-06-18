@@ -17,7 +17,7 @@
       "Learning through challenge",
       "Gaming for fun and growth"
     ],
-    "promptTemplate": "You are {{.Identity.Name}}.\n\nYour background: {{.Identity.Background}}. You were born on {{.Identity.Birthdate}} and use {{.Identity.Pronouns}} pronouns. You're based in {{.Identity.Location}}.\n\nSpeak with this tone: {{.VoiceTone}}\n\nPersonal summary:\n{{.Summary}}\n\nYou value:\n{{range .Values}}- {{.}}\n{{end}}\n\nWhen answering, speak in the first person as if you're chatting directly with someone curious about your background, projects, or experiences. Keep responses friendly, confident, and human — not robotic."
+    "promptTemplate": "You are a helpful, conversational assistant who speaks on behalf of {{.Identity.Name}}. Use a warm, honest tone that sounds like her talking. All responses should be based only on the resume and retrieved information. Don’t make up details, don’t exaggerate, and avoid claims like 'I’ve always used' or 'It’s my favorite' unless they’re explicitly mentioned. If you don’t know something from the resume, say so honestly. Keep answers concise and human, like you’re chatting with someone. Keep messages 2-3 sentences maximum."
   },
   "education": [
     {
@@ -39,7 +39,7 @@
         "Leadership",
         "Cybersecurity"
       ],
-      "tags": ["Education", "Graduate"],
+      "tags": ["Education", "Graduate", "Award"],
       "type": "education",
       "featured": true
     },
@@ -61,7 +61,7 @@
         "MySQL",
         "Figma"
       ],
-      "tags": ["Education", "Undergraduate"],
+      "tags": ["Education", "Undergraduate", "Award"],
       "type": "education",
       "featured": false
     },
@@ -275,7 +275,7 @@
       "name": "Travel Buddy",
       "startDate": "2021-01-28",
       "endDate": "2021-01-31",
-      "description": "I worked on back end development with American Airlines' Flight Engine API. This was my first time working on back end development. I also contributed to the Unity Game Scene Navigation with no experience in C# or the Unity Interface.",
+      "description": "I worked on back end development with American Airlines' Flight Engine API. This project placed first out of 17 teams for the challenge. This was my first time working on back end development. I also contributed to the Unity Game Scene Navigation with no experience in C# or the Unity Interface.",
       "institution": "TAMUhack 2021",
       "skills": [
         "Unity",
@@ -284,7 +284,7 @@
         "Adobe XD",
         "American Airlines Flight API"
       ],
-      "tags": ["Project", "Hackathon"],
+      "tags": ["Project", "Hackathon", "Award"],
       "demo": "https://devpost.com/software/travel-buddy-wh873z",
       "image": "/images/travel_buddy.jpg",
       "type": "project",
@@ -295,10 +295,10 @@
       "name": "WeGrowth",
       "startDate": "2021-01-08",
       "endDate": "2021-01-10",
-      "description": "With no C++ experience, I was able to take Felicia's amazing design's and incorporate them into the game. I worked on incorporating the sprite image, background image, and icons. I also sourced and incorporated sounds in the game.",
+      "description": "Placed top 10 out of close to 50 teams. With no C++ experience, I was able to take Felicia's amazing design's and incorporate them into the game. I worked on incorporating the sprite image, background image, and icons. I also sourced and incorporated sounds in the game.",
       "institution": "SheHacks V",
       "skills": ["C++", "Visual Studio", "Ubisoft API", "Adobe XD"],
-      "tags": ["Project", "Hackathon"],
+      "tags": ["Project", "Hackathon", "Award"],
       "demo": "https://devpost.com/software/branched-out",
       "image": "/images/wegrowth.jpg",
       "type": "project",

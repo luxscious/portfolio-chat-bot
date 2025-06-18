@@ -2,8 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
-	"os" // for reading env
+
+	// for reading env
+	"go-ai/config"
+	"go-ai/db"
+	"go-ai/openai"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -21,9 +27,6 @@ type ChatResponse struct {
 	Content string `json:"content"`
 }
 
-
-
-
 func chatHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse request body
 	var req ChatRequest
@@ -32,37 +35,64 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Retrieve previous conversation history
-	history := memory.Get(req.UserID)
+	// Fetch prior messages from MongoDB
+	history, err := db.GetMessages(req.UserID)
+	if err != nil {
+		http.Error(w, "Failed to retrieve message history: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	// Build full message array with system prompt
-	messages := []ChatMessage{
+	// Inject relevant content
+	retrievedChunks, err  := openai.SearchRelevantChunks(req.Message)
+	log.Println("Retrived Chunks",retrievedChunks)
+	if err != nil {
+		http.Error(w, "Embedding error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// Build the full message array (system + retrieved + history + user msg)
+	messages := []db.ChatMessage{
 		{
 			Role:    "system",
-			Content: systemPrompt, // global variable
+			Content: systemPrompt,
+		},
+		{
+			Role:    "assistant",
+			Content: fmt.Sprintf("Here are some relevant parts of my resume that might help answer your question:\n\n%s\n\n", retrievedChunks),
+
 		},
 	}
+
+	// Append conversation history and the latest user message
 	messages = append(messages, history...)
-	messages = append(messages, ChatMessage{
+	messages = append(messages, db.ChatMessage{
 		Role:    "user",
 		Content: req.Message,
 	})
 
-	// Call OpenAI
-	assistantReply, err := callOpenAI(messages)
+
+	// Call OpenAI with messages
+	reply, err := openai.CallOpenAI(messages)
 	if err != nil {
-		http.Error(w, "Failed to call OpenAI: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "OpenAI request failed: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Update conversation memory
-	memory.Add(req.UserID, ChatMessage{Role: "user", Content: req.Message})
-	memory.Add(req.UserID, ChatMessage{Role: "assistant", Content: assistantReply})
+	// Store both messages in MongoDB
+	err = db.StoreMessage(req.UserID, db.ChatMessage{Role: "user", Content: req.Message})
+	if err != nil {
+		http.Error(w, "Failed to store user message: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = db.StoreMessage(req.UserID, db.ChatMessage{Role: "assistant", Content: reply})
+	if err != nil {
+		http.Error(w, "Failed to store assistant message: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	// Respond with structured assistant message
+	// Respond to frontend
 	resp := ChatResponse{
 		Role:    "assistant",
-		Content: assistantReply,
+		Content: reply,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -77,10 +107,7 @@ func RegisterRoutes() http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	origin := os.Getenv("FRONTEND_ORIGIN")
-	if origin == "" {
-		origin = "http://localhost:5173" // fallback
-	}
+	origin := config.GetFrontendOrigin()
 	// 🌐 Enable CORS
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{origin}, // React server
