@@ -1,3 +1,7 @@
+Here’s your updated `README.md` to reflect the current state of your chatbot, including the removal of project-related matching logic and clarifying the use of semantic search for chunked data only:
+
+---
+
 # 🤖 Gabriella’s Resume Chatbot
 
 A personalized, first-person chatbot that answers questions based on my resume, work experience, projects, and personality. Powered by React, Go, OpenAI, and a structured `resume.json` file.
@@ -9,9 +13,9 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 - Uses my structured resume data and personality traits
 - Embeds that data for retrieval via semantic search (RAG-ready)
 - Builds a prompt in my tone using `personaContext`
-- Sends user input + resume context to OpenAI’s GPT model
-- Stores chat history per user with in-memory threads or MongoDB
-- Returns chatbot-style answers like they're directly from me
+- Sends user input + relevant context to OpenAI’s GPT model
+- Returns responses that sound like me
+- Stores conversation history per user (via MongoDB)
 
 ---
 
@@ -29,28 +33,27 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 │ (API Server)                 │
 │                              │
 │ - Loads resume.json          │
-│ - Builds prompt              │
+│ - Splits into semantic chunks│
 │ - Generates embeddings       │
-│   with OpenAI API            │
-│ - Stores/retrieves chat      │
-│   history from MongoDB       │
+│ - Ranks top 3 relevant chunks│
+│ - Builds prompt w/ persona   │
+│ - Sends to OpenAI API        │
+│ - Stores chat history        │
 └────────┬─────────────────────┘
-         │ API Request
+         │
          ▼
 ┌────────────────────┐
 │ 3. OpenAI API      │
-│ (GPT-4 / GPT-3.5)  │
+│      (GPT-4)       │
 └────────┬───────────┘
-         │ Completion
          ▼
 ┌────────────────────┐
 │ Back to Go Server  │
 └────────┬───────────┘
-         │ JSON Response
          ▼
 ┌────────────────────┐
-│  React Frontend    │
-│  displays message  │
+│ React Frontend     │
+│ displays response  │
 └────────────────────┘
 ```
 
@@ -58,13 +61,11 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 
 ## 🔍 Key Features
 
-- **Dynamic Prompting**: GPT responses use my voice, tone, and background
-- **Resume-Driven**: Pulls structured data from `resume.json`
-- **Embeddings**: Generates vector embeddings from resume content
-- **CORS Configurable**: Frontend origin is loaded from `.env`
-- **MongoDB Storage**: Optional persistent chat history storage
-- **Modular & Clean**: Frontend and backend separated
-- **Deployable**: Vercel (frontend), Railway/Render (backend)
+- **Persona-Based Prompting**: Uses a tone and voice based on my personality
+- **Semantic Chunk Embedding**: Only resume `chunks` are embedded and compared for similarity using cosine distance
+- **Chat Memory**: In-memory thread support and optional MongoDB persistence
+- **Simple Project Referencing**: GPT responses may mention projects naturally — no backend project lookups or joins
+- **Secure by Default**: No dynamic `resume.json` exposure or external writes
 
 ---
 
@@ -72,22 +73,26 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 
 ```
 resume-chatbot/
-├── client/            # React frontend
+├── client/                # React frontend
 │   └── src/
-├── server/            # Go backend
+├── server/                # Go backend
 │   ├── main.go
-│   ├── routes.go
-│   ├── resume.go
-│   ├── embedding.go
-│   ├── chat_history.go
-│   ├── call_openai.go
+│   ├── go.mod
+│   ├── go.sum
+│   ├── openai/
+│   │   ├── embedding.go
+│   │   └── open_ai.go
+│   ├── resume/
+│   │   ├── resume.go
+│   │   └── resume.json
 │   ├── config/
 │   │   └── env.go
 │   ├── db/
+│   │   ├── models.go
 │   │   └── mongo.go
-│   └── resume.json
-├── .env.example       # OpenAI, Mongo, and frontend config
 ├── README.md
+├── .env.example          # API keys and config template
+
 ```
 
 ---
@@ -100,20 +105,21 @@ resume-chatbot/
 git clone https://github.com/yourusername/resume-chatbot.git
 ```
 
-2. **Set up your `.env` files**
+2. **Set up your `.env`**
 
 ```bash
 cp .env.example .env
 ```
 
-Make sure `.env` contains:
+Update the following:
 
 ```env
 OPENAI_API_KEY=your-key-here
 FRONTEND_ORIGIN=http://localhost:5173
 OPENAI_API_URL=https://api.openai.com/v1/chat/completions
 OPENAI_EMBEDDING_URL=https://api.openai.com/v1/embeddings
-MONGO_URI=mongodb://localhost:27017
+PORT=8080
+MONGO_URI=
 MONGO_DB=resumeChatbot
 MONGO_COLLECTION=messages
 ```
@@ -130,22 +136,18 @@ cd client && npm install && npm run dev
 cd ../server && go run .
 ```
 
-5. **Chat live!** Frontend sends messages to Go backend which returns LLM responses.
+---
+
+## ✅ Notes & Limitations
+
+- Projects and awards are embedded as text chunks — no lookup by ID
+- All responses are generated from the retrieved chunks only
 
 ---
 
-## 📦 Future Enhancements
+## 🧪 Ideas for Future Improvements
 
-- Vector search with cosine similarity
-- Streaming GPT output to UI
-- Admin dashboard to manage/edit resume.json
-- Authenticated sessions for persistent chat threads
-
-### ✅ Resume File Safety
-
-- `resume.json` is only read once on startup — no hot reloading or public exposure.
-- No sensitive keys or tokens are stored in the JSON structure.
-- Embedding and prompt construction happen securely on the server.
-- CORS settings are loaded from `.env` for flexibility.
-- MongoDB used to persist chat history per user.
-- Future: consider access control or rate-limiting on the `/chat` endpoint.
+- [ ] Stream GPT output to frontend
+- [ ] Resume.json editor with live preview
+- [ ] GPT function-calling for structured answers (e.g. job search tools)
+- [ ] Need to send back json objects of resume data to display images, and more on projects mentioned
