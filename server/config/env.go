@@ -3,8 +3,15 @@ package config
 import (
 	"log"
 	"os"
-)
 
+	"github.com/joho/godotenv"
+)
+func LoadEnv() {
+	err := godotenv.Load("../.env") 
+	if err != nil {
+		log.Println("⚠️  No .env file found — relying on external environment variables.")
+	} 
+}
 // GetOpenAIKey fetches the OpenAI API key from environment
 func GetOpenAIKey() string {
 	key := os.Getenv("OPENAI_API_KEY")
@@ -48,4 +55,30 @@ func GetServerPort() string {
 		port = "8080" // fallback to default
 	}
 	return ":" + port
+}
+
+
+// Mongo config accessors
+func GetMongoURI() string {
+	uri := os.Getenv("MONGO_URI")
+	if uri == "" {
+		log.Fatal("❌ MONGO_URI not set in environment")
+	}
+	return uri
+}
+
+func GetMongoDB() string {
+	db := os.Getenv("MONGO_DB")
+	if db == "" {
+		log.Fatal("❌ MONGO_DB not set in environment")
+	}
+	return db
+}
+
+func GetMongoCollection() string {
+	coll := os.Getenv("MONGO_COLLECTION")
+	if coll == "" {
+		log.Fatal("❌ MONGO_COLLECTION not set in environment")
+	}
+	return coll
 }

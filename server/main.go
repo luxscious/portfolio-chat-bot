@@ -4,11 +4,10 @@ import (
 	"bytes"
 	"fmt" //print to console or output to response
 	"go-ai/config"
+	"go-ai/db"
 	"log"      //for logging messages or errors
 	"net/http" //built-in HTTP server
 	"text/template"
-
-	"github.com/joho/godotenv"
 )
 
 var systemPrompt string
@@ -46,10 +45,9 @@ func stringifyResume(resume *ResumeData) string {
 
 // init our env variables before main is called 
 func init() {
-	err := godotenv.Load("../.env") 
-	if err != nil {
-		log.Println("⚠️  No .env file found — relying on external environment variables.")
-	}
+	config.LoadEnv()
+	db.InitMongo()
+	
 	resume, err := loadResume("resume.json")
 	if err != nil {
 		log.Fatalf("Failed to load resume: %v", err)
