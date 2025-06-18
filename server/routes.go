@@ -25,35 +25,50 @@ type ChatResponse struct {
 
 
 func chatHandler(w http.ResponseWriter, r *http.Request) {
+	// Parse request body
 	var req ChatRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request", http.StatusBadRequest)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	// Get full thread (system + past + user message)
+	// Retrieve previous conversation history
 	history := memory.Get(req.UserID)
-	system := ChatMessage{
-		Role:    "system",
-		Content: systemPrompt,
+
+	// Build full message array with system prompt
+	messages := []ChatMessage{
+		{
+			Role:    "system",
+			Content: systemPrompt, // global variable
+		},
 	}
-	thread := append([]ChatMessage{system}, history...)
-	thread = append(thread, ChatMessage{Role: "user", Content: req.Message})
+	messages = append(messages, history...)
+	messages = append(messages, ChatMessage{
+		Role:    "user",
+		Content: req.Message,
+	})
 
 	// Call OpenAI
-	reply, err := callOpenAI(thread)
+	assistantReply, err := callOpenAI(messages)
 	if err != nil {
-		http.Error(w, "OpenAI error: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to call OpenAI: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Save both user message and assistant reply
+	// Update conversation memory
 	memory.Add(req.UserID, ChatMessage{Role: "user", Content: req.Message})
-	memory.Add(req.UserID, ChatMessage{Role: "assistant", Content: reply})
+	memory.Add(req.UserID, ChatMessage{Role: "assistant", Content: assistantReply})
 
-	// Return assistant reply
-	json.NewEncoder(w).Encode(ChatResponse{Role: "assistant", Content: reply})
+	// Respond with structured assistant message
+	resp := ChatResponse{
+		Role:    "assistant",
+		Content: assistantReply,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
 }
+
 
 func RegisterRoutes() http.Handler {
 	r := chi.NewRouter()

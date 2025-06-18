@@ -34,6 +34,7 @@ func callOpenAI(messages []ChatMessage) (string, error) {
 		return "", err
 	}
 
+	// Make request
 	req, err := http.NewRequest("POST", config.GetOpenAIChatURL() , bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", err
@@ -42,6 +43,7 @@ func callOpenAI(messages []ChatMessage) (string, error) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+ apiKey)
 
+	// Send Request
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", err
