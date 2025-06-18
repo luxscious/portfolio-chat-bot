@@ -4,12 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go-ai/config"
 	"io"
 	"net/http"
-	"os"
 )
-
-const embedURL = "https://api.openai.com/v1/embeddings"
 
 type EmbeddingRequest struct {
 	Input string `json:"input"`
@@ -24,11 +22,7 @@ type EmbeddingResponse struct {
 
 // generateEmbedding sends resume text to OpenAI and returns the vector
 func generateEmbedding(input string) ([]float64, error) {
-	apiKey := os.Getenv("OPENAI_API_KEY")
-	if apiKey == "" {
-		return nil, fmt.Errorf("OPENAI_API_KEY not set")
-	}
-
+	apiKey := config.GetOpenAIKey()
 	reqBody, err := json.Marshal(EmbeddingRequest{
 		Input: input,
 		Model: "text-embedding-ada-002",
@@ -36,8 +30,8 @@ func generateEmbedding(input string) ([]float64, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	req, err := http.NewRequest("POST", embedURL, bytes.NewBuffer(reqBody))
+	
+	req, err := http.NewRequest("POST", config.GetOpenAIEmbeddingURL(), bytes.NewBuffer(reqBody))
 	if err != nil {
 		return nil, err
 	}

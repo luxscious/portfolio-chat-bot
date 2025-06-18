@@ -2,13 +2,17 @@ package main
 
 import (
 	"bytes"
-	"fmt"      //print to console or output to response
+	"fmt" //print to console or output to response
+	"go-ai/config"
 	"log"      //for logging messages or errors
 	"net/http" //built-in HTTP server
 	"text/template"
 
 	"github.com/joho/godotenv"
 )
+
+var systemPrompt string
+// Helper Functions
 func buildSystemPrompt(p PersonaContext) (string, error) {
 	tmpl, err := template.New("prompt").Parse(p.PromptTemplate)
 	if err != nil {
@@ -46,25 +50,23 @@ func init() {
 	if err != nil {
 		log.Println("⚠️  No .env file found — relying on external environment variables.")
 	}
-}
-func main() {
-
-	// Load Resume
 	resume, err := loadResume("resume.json")
 	if err != nil {
 		log.Fatalf("Failed to load resume: %v", err)
 	}
 
+	fmt.Println("✅ System prompt initialized")
 	fmt.Println("System prompt preview:")
-	systemPrompt, err := buildSystemPrompt(resume.PersonaContext)
+	systemPrompt, err = buildSystemPrompt(resume.PersonaContext)
 	if err != nil {
 		log.Fatalf("Failed to build system prompt: %v", err)
-	}
+	}	
 	fmt.Println("System prompt preview:")
 	fmt.Println(systemPrompt)
-
 	fmt.Printf("🔎 %d education entries, %d work entries, %d projects loaded\n",
 	len(resume.Education), len(resume.WorkExperience), len(resume.Projects))
+	
+	
 	
 	// Call embedding function
 	resumeText := stringifyResume(resume)
@@ -73,9 +75,11 @@ func main() {
 		log.Fatalf("Embedding failed: %v", err)
 	}
 	fmt.Printf("✅ Embedding generated! First 5 values: %v\n", vector[:5])
+	
+}
+func main() {
 
-
-	port := ":8080"	
+	port := config.GetServerPort()
 	log.Printf("✅ Server started on http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, RegisterRoutes()))
 }

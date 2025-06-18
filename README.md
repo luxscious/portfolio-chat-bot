@@ -14,9 +14,12 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 
 ---
 
-## 🧱 Architecture
+## 🛡️ Architecture
 
 ```
+🔐 .env
+  └️ Configures secrets (OpenAI key, frontend origin, etc.)
+
 ┌────────────────────┐
 │ 1. React Frontend  │
 │ (Vite-based app)   │
@@ -30,7 +33,8 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 │ - Loads resume.json          │
 │ - Builds prompt              │
 │ - Generates embeddings       │
-│   with OpenAI API            │
+│ - Handles user history       │
+│ - Routes via Chi             │
 └────────┬─────────────────────┘
          │ API Request
          ▼
@@ -58,8 +62,9 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 - **Dynamic Prompting**: GPT responses use my voice, tone, and background
 - **Resume-Driven**: Pulls structured data from `resume.json`
 - **Embeddings**: Generates vector embeddings from resume content
+- **Chat Memory**: User-specific thread history with support for future sessions
 - **CORS Configurable**: Frontend origin is loaded from `.env`
-- **Modular & Clean**: Frontend and backend separated
+- **Modular & Clean**: Frontend and backend separated into Go packages
 - **Deployable**: Vercel (frontend), Railway/Render (backend)
 
 ---
@@ -68,15 +73,18 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 
 ```
 resume-chatbot/
-├── client/            # React frontend
+├── client/              # React frontend
 │   └── src/
-├── server/            # Go backend
+├── server/              # Go backend
 │   ├── main.go
 │   ├── routes.go
-│   ├── resume.go
-│   ├── embedding.go
-│   └── resume.json
-├── .env.example       # OpenAI API key and server config
+│   ├── open_ai.go       # Handles OpenAI chat completions
+│   ├── embedding.go     # Handles resume embeddings
+│   ├── resume.go        # Resume structs + loading logic
+│   ├── chat_history.go  # Per-user session history
+│   └── config/
+│       └── env.go       # Centralized env var access
+├── .env.example         # Environment variable sample
 ├── README.md
 ```
 
@@ -90,17 +98,21 @@ resume-chatbot/
 git clone https://github.com/yourusername/resume-chatbot.git
 ```
 
-2. **Set up your `.env` files**
+2. **Set up your `.env` file**
 
 ```bash
 cp .env.example .env
 ```
 
-Make sure `.env` contains:
+Edit `.env` with:
 
 ```env
 OPENAI_API_KEY=your-key-here
+OPENAI_API_URL=https://api.openai.com/v1/chat/completions
+OPENAI_EMBEDDING_URL=https://api.openai.com/v1/embeddings
 FRONTEND_ORIGIN=http://localhost:5173
+REACT_APP_API_URL=http://localhost:8080/chat
+PORT=8080
 ```
 
 3. **Install frontend dependencies**
