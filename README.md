@@ -61,37 +61,67 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 
 ## 🔍 Key Features
 
-- **Persona-Based Prompting**: Uses a tone and voice based on my personality
-- **Semantic Chunk Embedding**: Only resume `chunks` are embedded and compared for similarity using cosine distance
-- **Chat Memory**: MongoDB persistence of chat messages based on user
-- **Simple Project Referencing**: GPT responses may mention projects naturally — no backend project lookups or joins
-- **Secure by Default**: No dynamic `resume.json` exposure or external writes
-
----
+- **Persona-Based Prompting**: Responses mirror my voice and personality
+- **Semantic Chunk Embedding**: Resume data is chunked and embedded for similarity-based retrieval
+- **UUID-Based Session Tracking**: Each user gets a unique ID saved in `localStorage` to persist history. Not too concerned about XSS attacks here or security worries.
+- **Typewriter Animation**: Assistant replies animate one character at a time
+- **Input Disable Logic**: Input is disabled while waiting for backend OR while the assistant is typing
+- **Message Placeholder**: An empty assistant message renders animated dots (`<Ellipsis />`) before reply
+- **Chat Memory**: MongoDB stores per-user chat threads
 
 ## 📁 File Structure
 
 ```
-resume-chatbot/
-├── client/                # React frontend
-│   └── src/
-├── server/                # Go backend
-│   ├── main.go
-│   ├── go.mod
-│   ├── go.sum
-│   ├── openai/
-│   │   ├── embedding.go
-│   │   └── open_ai.go
-│   ├── resume/
-│   │   ├── resume.go
-│   │   └── resume.json
+portfolio-chat-bot/
+├── client/         # REACT + VITE FRONTEND
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── ui/
+│   │   │       ├── button.tsx
+│   │   │       ├── input.tsx
+│   │   │       ├── scroll-area.tsx
+│   │   │       ├── ChatWindow.tsx
+│   │   │       ├── MessageBubble.tsx
+│   │   │       └── MessageInput.tsx
+│   │   ├── hooks/
+│   │   │   └── TypingEffect.ts
+│   │   ├── lib/
+│   │   │   └── utils.ts
+│   │   ├── pages/
+│   │   │   └── ChatPage.tsx
+│   │   ├── styles/
+│   │   │   └── index.css
+│   │   ├── types/
+│   │   │   └── index.ts
+│   │   ├── App.tsx
+│   │   ├── ChatPage.ts
+│   │   ├── main.tsx
+│   │   └── vite-env.d.ts
+│   ├── .env
+│   ├── .env.example
+│   ├── components.json
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+├── server/                 # GO BACKEND
 │   ├── config/
 │   │   └── env.go
 │   ├── db/
-│   │   ├── models.go
-│   │   └── mongo.go
-├── README.md
-├── .env.example          # API keys and config template
+│   ├── openai/
+│   ├── resume/
+│   │   ├── resume.go
+│   │   └── resume.json
+│   ├── .env
+│   ├── .env.example
+│   ├── go.mod
+│   ├── go.sum
+│   ├── main.go
+│   └── routes.go
+├── .gitignore
+└── README.md
 
 ```
 
@@ -140,14 +170,11 @@ cd ../server && go run .
 
 ## ✅ Notes & Limitations
 
-- Projects and awards are embedded as text chunks — no lookup by ID
-- All responses are generated from the retrieved chunks only
+- The backend logic is kinda funky right now. Need to look into the responses.
 
 ---
 
 ## 🧪 Ideas for Future Improvements
 
-- [ ] Stream GPT output to frontend
 - [ ] Resume.json editor with live preview
-- [ ] GPT function-calling for structured answers (e.g. job search tools)
 - [ ] Need to send back json objects of resume data to display images, and more on projects mentioned
