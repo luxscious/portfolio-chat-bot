@@ -168,9 +168,10 @@ cd ../server && go run .
 
 ---
 
-## ✅ Notes & Limitations
+## Bugs to look into
 
-- The backend logic is kinda funky right now. Need to look into the responses.
+- The backend logic is kinda funky right now.
+- If a user loads the page and the connection to server is bad, but then is restored, need to be able to display that the bot isnt connected to the server.. Convo history also should be restored when connection resumes.
 
 ---
 
