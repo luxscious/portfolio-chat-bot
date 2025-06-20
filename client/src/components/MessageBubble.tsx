@@ -1,14 +1,34 @@
 import { Message } from "@/types";
 import { useTypingEffect } from "@/hooks/TypingEffect";
+import { Ellipsis } from "lucide-react";
+import { useEffect } from "react";
 
 interface Props {
   message: Message;
+  onTypingDone?: () => void;
 }
 
-export default function MessageBubble({ message }: Props) {
+export default function MessageBubble({ message, onTypingDone }: Props) {
   const isUser = message.role === "user";
-  const { displayedText, isTyping } = useTypingEffect(message.content, 20);
+  const isEmptyAssistant =
+    message.role === "assistant" && message.content === "";
 
+  const { displayedText, isTyping } = useTypingEffect(
+    isUser || isEmptyAssistant ? "" : message.content,
+    20
+  );
+  useEffect(() => {
+    const hasContent = message.content.trim().length > 0;
+
+    if (
+      !isTyping &&
+      message.role === "assistant" &&
+      hasContent &&
+      onTypingDone
+    ) {
+      onTypingDone();
+    }
+  }, [isTyping]);
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
@@ -16,12 +36,16 @@ export default function MessageBubble({ message }: Props) {
           isUser ? "bg-[#444654] text-gray-100" : "text-white"
         }`}
       >
-        <span>
-          {displayedText}
-          {isTyping && (
-            <span className="animate-pulse inline-block w-[1ch]">|</span>
-          )}
-        </span>
+        {isEmptyAssistant ? (
+          <Ellipsis className="animate-pulse text-white w-5 h-5" />
+        ) : (
+          <>
+            {isUser ? message.content : displayedText}
+            {!isUser && isTyping && (
+              <span className="animate-pulse inline-block w-[1ch]">|</span>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

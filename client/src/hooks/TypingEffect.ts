@@ -6,35 +6,42 @@ interface TypingEffectResult {
 }
 
 export function useTypingEffect(
-  text: string,
+  text: string | undefined,
   baseSpeed: number = 20
 ): TypingEffectResult {
   const [displayedText, setDisplayedText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
+    if (!text || text.length === 0) {
+      setDisplayedText("");
+      setIsTyping(false);
+      return;
+    }
+
     setDisplayedText("");
     setIsTyping(true);
 
     let index = 0;
+    let timeoutId: number;
 
     const typeChar = () => {
-      setDisplayedText((prev) => prev + text.charAt(index));
+      const currentChar = text.charAt(index);
+      setDisplayedText((prev) => prev + currentChar);
       index++;
 
       if (index < text.length) {
-        const char = text.charAt(index - 1);
-        const delay = [",", ".", "!", "?"].includes(char)
+        const delay = [",", ".", "!", "?"].includes(currentChar)
           ? baseSpeed * 10
           : baseSpeed;
-        setTimeout(typeChar, delay);
+
+        timeoutId = window.setTimeout(typeChar, delay);
       } else {
         setIsTyping(false);
       }
     };
-
-    const timeout = setTimeout(typeChar, baseSpeed);
-    return () => clearTimeout(timeout);
+    typeChar();
+    return () => clearTimeout(timeoutId);
   }, [text, baseSpeed]);
 
   return { displayedText, isTyping };

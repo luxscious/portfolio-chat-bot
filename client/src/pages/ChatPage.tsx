@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useChat } from "@/hooks/ChatPage";
 
 export default function ChatPage() {
-  const { messages, sendMessage } = useChat();
+  const { messages, sendMessage, isLoading, isTyping, setIsTyping } = useChat();
   return (
     <div className="flex h-screen">
       {/* Left Sidebar */}
@@ -13,8 +13,14 @@ export default function ChatPage() {
       {/* Center Chatbot */}
       <div className="w-1/2 bg-gray-900 p-6 flex justify-center pb-12">
         <div className="w-full space-y-4">
-          <ChatWindow messages={messages} />
-          <MessageInput onSend={sendMessage} />
+          <ChatWindow
+            messages={messages}
+            onTypingDone={() => setIsTyping(false)}
+          />
+          <MessageInput
+            onSend={sendMessage}
+            isDisabled={isLoading || isTyping}
+          />
 
           <p className="text-sm text-gray-400 text-center font-light">
             This chat agent can make mistakes. Please verify information through
