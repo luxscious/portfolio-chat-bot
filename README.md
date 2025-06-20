@@ -63,7 +63,7 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 
 - **Persona-Based Prompting**: Uses a tone and voice based on my personality
 - **Semantic Chunk Embedding**: Only resume `chunks` are embedded and compared for similarity using cosine distance
-- **Chat Memory**: In-memory thread support and optional MongoDB persistence
+- **Chat Memory**: MongoDB persistence of chat messages based on user
 - **Simple Project Referencing**: GPT responses may mention projects naturally — no backend project lookups or joins
 - **Secure by Default**: No dynamic `resume.json` exposure or external writes
 
