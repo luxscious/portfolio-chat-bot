@@ -1,20 +1,27 @@
 import { Message } from "@/types";
+import { useTypingEffect } from "@/hooks/TypingEffect";
 
-interface MessageBubbleProps {
+interface Props {
   message: Message;
 }
 
-export default function MessageBubble({ message }: MessageBubbleProps) {
+export default function MessageBubble({ message }: Props) {
   const isUser = message.role === "user";
+  const { displayedText, isTyping } = useTypingEffect(message.content, 20);
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-xs px-4 py-2 rounded-xl text-sm shadow-md ${
-          isUser ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-800"
+        className={`px-4 py-3 max-w-2xl text-sm rounded-md break-words whitespace-pre-wrap ${
+          isUser ? "bg-[#444654] text-gray-100" : "text-white"
         }`}
       >
-        {message.content}
+        <span>
+          {displayedText}
+          {isTyping && (
+            <span className="animate-pulse inline-block w-[1ch]">|</span>
+          )}
+        </span>
       </div>
     </div>
   );

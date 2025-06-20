@@ -19,7 +19,10 @@ export function useChat() {
     setTimeout(() => {
       setMessages([
         ...newMessages,
-        { role: "assistant", content: "This is a stubbed response." },
+        {
+          role: "assistant",
+          content: "This is a stubbed response. LALALALALALALALLALA",
+        },
       ]);
     }, 500);
   };
