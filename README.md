@@ -132,7 +132,7 @@ portfolio-chat-bot/
 1. **Clone the repo**
 
 ```bash
-git clone https://github.com/yourusername/resume-chatbot.git
+git clone https://github.com/luxscious/portfolio-chat-bot.git
 ```
 
 2. **Set up your `.env`**
@@ -140,6 +140,7 @@ git clone https://github.com/yourusername/resume-chatbot.git
 ```bash
 cp .env.example .env
 ```
+do this for both frontend and backend folders
 
 Update the following:
 
