@@ -28,7 +28,14 @@ export default function ChatPage() {
           </p>
 
           <div className="flex justify-center">
-            <Button variant="secondary">Resume</Button>
+            <Button variant="secondary">
+              <a
+                className="font-normal"
+                href="https://luxscious.github.io/git-cloud-storage/Gabriella_Gerges_Resume.pdf"
+              >
+                Resumé
+              </a>
+            </Button>
           </div>
         </div>
       </div>
