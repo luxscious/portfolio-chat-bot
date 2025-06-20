@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	// for reading env
 	"go-ai/config"
@@ -19,7 +20,7 @@ import (
 // STRUCTS
 type ChatRequest struct {
 	UserID  string `json:"userId"`
-	Message string `json:"message"`
+	Message string `json:"content"`
 }
 
 type ChatResponse struct {
@@ -78,12 +79,22 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Store both messages in MongoDB
-	err = db.StoreMessage(req.UserID, db.ChatMessage{Role: "user", Content: req.Message})
+	err = db.StoreMessage(req.UserID, db.ChatMessage{
+    UserID:    req.UserID,
+    Role:      "user",
+    Content:   req.Message,
+    Timestamp: time.Now(),
+	})
 	if err != nil {
 		http.Error(w, "Failed to store user message: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = db.StoreMessage(req.UserID, db.ChatMessage{Role: "assistant", Content: reply})
+	err = db.StoreMessage(req.UserID, db.ChatMessage{
+    UserID:    req.UserID,
+    Role:      "assistant",
+    Content:   reply,
+    Timestamp: time.Now(),
+	})
 	if err != nil {
 		http.Error(w, "Failed to store assistant message: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -99,6 +110,26 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 }
 
+func handleGetChat(w http.ResponseWriter, r *http.Request){
+	userId := r.URL.Query().Get("userId")
+    if userId == "" {
+        http.Error(w, "Missing userId", http.StatusBadRequest)
+        return
+    }
+
+    messages, err := db.GetMessages(userId)
+    if err != nil {
+        http.Error(w, "Failed to fetch messages", http.StatusInternalServerError)
+        return
+    }
+	if messages == nil {
+        messages = []db.ChatMessage{} 
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(messages)
+
+}
 
 func RegisterRoutes() http.Handler {
 	r := chi.NewRouter()
@@ -120,6 +151,7 @@ func RegisterRoutes() http.Handler {
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("👋 Resume Chatbot backend is running!"))
 	})
+	r.Get("/chat", handleGetChat)
 
 	r.Post("/chat", chatHandler)
 

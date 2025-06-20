@@ -50,25 +50,28 @@ func StoreMessage(userID string, msg ChatMessage) error {
 
 // GetMessages retrieves all messages for a user
 func GetMessages(userID string) ([]ChatMessage, error) {
-	var results []ChatMessage
+    var messages []ChatMessage
 
-	filter := bson.M{"user_id": userID}
-	cursor, err := collection.Find(context.Background(), filter)
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(context.Background())
+    filter := bson.M{"user_id": userID}
+    findOptions := options.Find().SetSort(bson.D{{Key: "timestamp", Value: 1}}) // ascending
 
-	for cursor.Next(context.Background()) {
-		var msg ChatMessage
-		if err := cursor.Decode(&msg); err != nil {
-			return nil, err
-		}
-		results = append(results, msg)
-	}
-	if err := cursor.Err(); err != nil {
-    	return nil, err
-	}
+    cursor, err := collection.Find(context.TODO(), filter, findOptions)
+    if err != nil {
+        return nil, err
+    }
+    defer cursor.Close(context.TODO())
 
-	return results, nil
+    for cursor.Next(context.TODO()) {
+        var msg ChatMessage
+        if err := cursor.Decode(&msg); err != nil {
+            return nil, err
+        }
+        messages = append(messages, msg)
+    }
+
+    if err := cursor.Err(); err != nil {
+        return nil, err
+    }
+
+    return messages, nil
 }

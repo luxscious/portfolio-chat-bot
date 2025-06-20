@@ -14,7 +14,9 @@ export default function MessageBubble({ message, onTypingDone }: Props) {
     message.role === "assistant" && message.content === "";
 
   const { displayedText, isTyping } = useTypingEffect(
-    isUser || isEmptyAssistant ? "" : message.content,
+    isUser || isEmptyAssistant || message.disableAnimation
+      ? ""
+      : message.content,
     20
   );
   useEffect(() => {
@@ -40,7 +42,9 @@ export default function MessageBubble({ message, onTypingDone }: Props) {
           <Ellipsis className="animate-pulse text-white w-5 h-5" />
         ) : (
           <>
-            {isUser ? message.content : displayedText}
+            {isUser || message.disableAnimation
+              ? message.content
+              : displayedText}
             {!isUser && isTyping && (
               <span className="animate-pulse inline-block w-[1ch]">|</span>
             )}

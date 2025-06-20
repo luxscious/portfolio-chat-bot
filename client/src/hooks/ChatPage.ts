@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Message } from "@/types";
 import { v4 as uuidv4 } from "uuid";
 
@@ -17,6 +17,23 @@ export function useChat() {
   };
 
   const userId = getUserId();
+
+  const loadMessages = async () => {
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/chat?userId=${userId}`
+    );
+    const loaded = await res.json();
+
+    const loadedMessages: Message[] = loaded.map((msg: any) => ({
+      ...msg,
+      disableAnimation: true, // prevent typing
+    }));
+    setMessages(loadedMessages);
+  };
+
+  useEffect(() => {
+    loadMessages();
+  }, []);
 
   const sendMessage = async (msg: string) => {
     const userMessage: Message = { role: "user", content: msg };
