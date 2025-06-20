@@ -8,11 +8,10 @@ export function useChat() {
   const [isTyping, setIsTyping] = useState(false);
 
   const getUserId = () => {
-    // Check sessionStorage first
-    let userId = sessionStorage.getItem("userId");
+    let userId = localStorage.getItem("userId");
     if (!userId) {
       userId = uuidv4();
-      sessionStorage.setItem("userId", userId);
+      localStorage.setItem("userId", userId);
     }
     return userId;
   };
