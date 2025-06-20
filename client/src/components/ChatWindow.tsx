@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import MessageBubble from "./MessageBubble";
 import { Message } from "@/types";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface ChatWindowProps {
   messages: Message[];
@@ -17,7 +18,7 @@ export default function ChatWindow({
   }, [messages]);
 
   return (
-    <div className="flex-1 h-10/12 px-4 py-8 space-y-4 overflow-y-auto">
+    <ScrollArea className="flex-1 h-10/12 px-4 py-8 space-y-4">
       {messages.map((msg, i) => (
         <MessageBubble
           key={i}
@@ -30,6 +31,6 @@ export default function ChatWindow({
         />
       ))}
       <div ref={bottomRef} />
-    </div>
+    </ScrollArea>
   );
 }
