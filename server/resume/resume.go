@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 // Identity holds personal identity details
@@ -113,4 +114,45 @@ func LoadResume(path string) (*ResumeData, error) {
 
 	fmt.Println("✅ Resume loaded for:", resume.PersonaContext.Identity.Name)
 	return &resume, nil
+}
+
+func (r *ResumeData) FlattenResume() string {
+	var sb strings.Builder
+
+	sb.WriteString("Persona Summary:\n")
+	sb.WriteString(r.PersonaContext.Summary + "\n\n")
+
+	sb.WriteString("Voice & Values:\n")
+	sb.WriteString("Tone: " + r.PersonaContext.VoiceTone + "\n")
+	sb.WriteString("Values: " + strings.Join(r.PersonaContext.Values, ", ") + "\n\n")
+
+	sb.WriteString("Education:\n")
+	for _, edu := range r.Education {
+		sb.WriteString(fmt.Sprintf("- %s at %s (%s – %s)\n  %s\n",
+			edu.Name, edu.Institution, edu.StartDate, edu.EndDate, edu.Description))
+	}
+	sb.WriteString("\n")
+
+	sb.WriteString("Work Experience:\n")
+	for _, exp := range r.WorkExperience {
+		sb.WriteString(fmt.Sprintf("- %s at %s (%s – %s)\n  %s\n",
+			exp.Name, exp.Institution, exp.StartDate, exp.EndDate, exp.Description))
+		for _, proj := range exp.Projects {
+			sb.WriteString(fmt.Sprintf("    · Project: %s — %s\n", proj.Title, proj.Description))
+		}
+	}
+	sb.WriteString("\n")
+
+	sb.WriteString("Projects:\n")
+	for _, proj := range r.Projects {
+		sb.WriteString(fmt.Sprintf("- %s (%s – %s)\n  %s\n",
+			proj.Name, proj.StartDate, proj.EndDate, proj.Description))
+	}
+
+	sb.WriteString("\nHobbies:\n")
+	for _, h := range r.Hobbies {
+		sb.WriteString(fmt.Sprintf("- %s: %s\n", h.Name, h.Description))
+	}
+
+	return sb.String()
 }

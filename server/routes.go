@@ -2,8 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -29,85 +27,50 @@ type ChatResponse struct {
 }
 
 func chatHandler(w http.ResponseWriter, r *http.Request) {
-	// Parse request body
 	var req ChatRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	// Fetch prior messages from MongoDB
-	history, err := db.GetMessages(req.UserID)
+	
+
+	// Use SmartQuery: 2-step GPT process (filter → generate)
+	reply, err := openai.SmartQuery(globalResumeData, req.Message)
 	if err != nil {
-		http.Error(w, "Failed to retrieve message history: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to generate response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Inject relevant content
-	retrievedChunks, err  := openai.SearchRelevantChunks(req.Message)
-	log.Println("Retrived Chunks",retrievedChunks)
-	if err != nil {
-		http.Error(w, "Embedding error: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// Build the full message array (system + retrieved + history + user msg)
-	messages := []db.ChatMessage{
-		{
-			Role:    "system",
-			Content: systemPrompt,
-		},
-		{
-			Role:    "assistant",
-			Content: fmt.Sprintf("Here are some relevant parts of my resume that might help answer your question:\n\n%s\n\n", retrievedChunks),
-
-		},
-	}
-
-	// Append conversation history and the latest user message
-	messages = append(messages, history...)
-	messages = append(messages, db.ChatMessage{
-		Role:    "user",
-		Content: req.Message,
-	})
-
-
-	// Call OpenAI with messages
-	reply, err := openai.CallOpenAI(messages)
-	if err != nil {
-		http.Error(w, "OpenAI request failed: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Store both messages in MongoDB
+	// Store messages in MongoDB
 	err = db.StoreMessage(req.UserID, db.ChatMessage{
-    UserID:    req.UserID,
-    Role:      "user",
-    Content:   req.Message,
-    Timestamp: time.Now(),
+		UserID:    req.UserID,
+		Role:      "user",
+		Content:   req.Message,
+		Timestamp: time.Now(),
 	})
 	if err != nil {
 		http.Error(w, "Failed to store user message: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	err = db.StoreMessage(req.UserID, db.ChatMessage{
-    UserID:    req.UserID,
-    Role:      "assistant",
-    Content:   reply,
-    Timestamp: time.Now(),
+		UserID:    req.UserID,
+		Role:      "assistant",
+		Content:   reply,
+		Timestamp: time.Now(),
 	})
 	if err != nil {
 		http.Error(w, "Failed to store assistant message: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Respond to frontend
-	resp := ChatResponse{
+	// Send response
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(ChatResponse{
 		Role:    "assistant",
 		Content: reply,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	})
 }
 
 func handleGetChat(w http.ResponseWriter, r *http.Request){
