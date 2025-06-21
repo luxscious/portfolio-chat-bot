@@ -32,10 +32,11 @@ func init() {
 	fmt.Printf("🔎 %d education entries, %d work entries, %d projects loaded\n",
 		len(resumeData.Education), len(resumeData.WorkExperience), len(resumeData.Projects))
 
-	if err := openai.LoadAndEmbedResumeChunks(resumeData); err != nil {
-		log.Fatalf("❌ Failed to embed resume chunks: %v", err)
-	}
-	fmt.Println("✅ Resume chunks embedded and ready for retrieval")
+	// Getting rid of embedding for now. Using chat gpt to find relevant projects
+	// if err := openai.LoadAndEmbedResumeChunks(resumeData); err != nil {
+	// 	log.Fatalf("❌ Failed to embed resume chunks: %v", err)
+	// }
+	// fmt.Println("✅ Resume chunks embedded and ready for retrieval")
 }
 
 func main() {

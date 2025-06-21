@@ -99,29 +99,54 @@ func SmartQuery(resumeData *resume.ResumeData, userInput string) (string, error)
 
 // ExtractRelevantResumeInfo uses GPT to identify the most relevant resume entries
 func ExtractRelevantResumeInfo(resumeData *resume.ResumeData, userInput string) (string, error) {
-	const filterTemplate = `
-You are {{.Identity.Name}}'s assistant. You have her full resume below.
+	const extractionTemplate = `
+You are {{.Identity.Name}}'s assistant. You have her full resume below in JSON format.
 
 User's Question:
 {{.UserInput}}
 
-Resume:
-{{.FlatResume}}
+Resume (JSON):
+{{.FullResumeJSON}}
 
-Please extract the most relevant work experiences, projects, education, or personal traits that would help answer the question. Return a concise bullet-point summary of those items.
+---
+
+Please extract the most relevant items from the resume that would help answer the user's question.
+
+Each item must match this format:
+
+{
+  "id": "exact-id-from-json",
+  "startDate": "YYYY-MM-DD", // omit if not applicable
+  "endDate": "YYYY-MM-DD",
+  "name": "Exact name",
+  "description": "Why it's relevant to the question",
+  "institution": "If applicable",
+  "skills": ["tech1", "tech2"],
+  "tags": ["Project", "Education", "Trait", ...],
+  "type": "project" | "education" | "experience" | "trait",
+  "featured": true|false
+}
+
+Return a JSON array of all relevant items. Use exact values from the provided JSON resume.
 `
 
-	tmpl, err := template.New("filter").Parse(filterTemplate)
+	tmpl, err := template.New("resumeExtraction").Parse(extractionTemplate)
 	if err != nil {
 		return "", err
 	}
 
 	var buf bytes.Buffer
-	flatResume := resume.FlattenResume(resumeData)
+
+	// Serialize the full resume data to JSON
+	resumeJSON, err := json.MarshalIndent(resumeData, "", "  ")
+	if err != nil {
+		return "", err
+	}
+
 	err = tmpl.Execute(&buf, map[string]interface{}{
-		"Identity":   resumeData.PersonaContext.Identity,
-		"FlatResume": flatResume,
-		"UserInput":  userInput,
+		"Identity":       resumeData.PersonaContext.Identity,
+		"UserInput":      userInput,
+		"FullResumeJSON": string(resumeJSON),
 	})
 	if err != nil {
 		return "", err
@@ -133,18 +158,14 @@ Please extract the most relevant work experiences, projects, education, or perso
 	}, "gpt-3.5-turbo")
 }
 
-// GeneratePersonalAnswer crafts the final GPT response in Gabriella's tone
+
 func GeneratePersonalAnswer(resumeData *resume.ResumeData, relevantInfo, userInput string) (string, error) {
 	systemPrompt, err := BuildSystemPrompt(resumeData.PersonaContext)
 	if err != nil {
 		return "", err
 	}
 
-	userPrompt := fmt.Sprintf(`Relevant Resume Info:
-%s
-
-User Question:
-%s`, relevantInfo, userInput)
+	userPrompt := fmt.Sprintf(`Relevant Resume Info: %s User Question: %s`, relevantInfo, userInput)
 
 	return CallOpenAI([]db.ChatMessage{
 		{Role: "system", Content: systemPrompt},
