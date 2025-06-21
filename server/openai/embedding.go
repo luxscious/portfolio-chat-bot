@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"slices"
-	"sort"
 	"strings"
 )
 
@@ -31,50 +30,50 @@ type EmbeddedChunk struct {
 
 var resumeChunks []EmbeddedChunk
 
-func SearchRelevantChunks(query string) ([]string, []float64, error) {
-	log.Println("🔍 Generating embedding for user query:", query)
-	queryVec, err := GenerateEmbedding(query)
-	if err != nil {
-		return nil, nil, err
-	}
+// func SearchRelevantChunks(query string) ([]string, []float64, error) {
+// 	log.Println("🔍 Generating embedding for user query:", query)
+// 	queryVec, err := GenerateEmbedding(query)
+// 	if err != nil {
+// 		return nil, nil, err
+// 	}
 
-	type scoredChunk struct {
-		Text  string
-		Score float64
-	}
-	var results []scoredChunk
+// 	type scoredChunk struct {
+// 		Text  string
+// 		Score float64
+// 	}
+// 	var results []scoredChunk
 
-	log.Printf("📦 Comparing against %d resume chunks...", len(resumeChunks))
-	for _, chunk := range resumeChunks {
-		score := CosineSim(queryVec, chunk.Embedding)
-		results = append(results, scoredChunk{chunk.Text, score})
-	}
+// 	log.Printf("📦 Comparing against %d resume chunks...", len(resumeChunks))
+// 	for _, chunk := range resumeChunks {
+// 		score := CosineSim(queryVec, chunk.Embedding)
+// 		results = append(results, scoredChunk{chunk.Text, score})
+// 	}
 
-	if len(results) == 0 {
-		log.Println("⚠️ No chunks to compare.")
-		return nil, nil, nil
-	}
+// 	if len(results) == 0 {
+// 		log.Println("⚠️ No chunks to compare.")
+// 		return nil, nil, nil
+// 	}
 
-	sort.Slice(results, func(i, j int) bool {
-		return results[i].Score > results[j].Score
-	})
+// 	sort.Slice(results, func(i, j int) bool {
+// 		return results[i].Score > results[j].Score
+// 	})
 
-	top := 3
-	if len(results) < 3 {
-		top = len(results)
-	}
+// 	top := 3
+// 	if len(results) < 3 {
+// 		top = len(results)
+// 	}
 
-	var topChunks []string
-	var topScores []float64
-	for i := 0; i < top; i++ {
-		topChunks = append(topChunks, results[i].Text)
-		topScores = append(topScores, results[i].Score)
-	}
+// 	var topChunks []string
+// 	var topScores []float64
+// 	for i := 0; i < top; i++ {
+// 		topChunks = append(topChunks, results[i].Text)
+// 		topScores = append(topScores, results[i].Score)
+// 	}
 
-	log.Println("📥 Retrieved Chunks:", topChunks)
-	log.Println("📊 Chunk Scores:", topScores)
-	return topChunks, topScores, nil
-}
+// 	log.Println("📥 Retrieved Chunks:", topChunks)
+// 	log.Println("📊 Chunk Scores:", topScores)
+// 	return topChunks, topScores, nil
+// }
 
 
 // LoadAndEmbedResumeChunks takes ResumeData and sends each chunk for embedding

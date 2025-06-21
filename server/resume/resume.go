@@ -116,43 +116,62 @@ func LoadResume(path string) (*ResumeData, error) {
 	return &resume, nil
 }
 
-func (r *ResumeData) FlattenResume() string {
-	var sb strings.Builder
+func FlattenResume(data *ResumeData) string {
+	var out strings.Builder
 
-	sb.WriteString("Persona Summary:\n")
-	sb.WriteString(r.PersonaContext.Summary + "\n\n")
+	// Persona
+	out.WriteString("Persona:\n")
+	out.WriteString(fmt.Sprintf("Summary: %s\n", data.PersonaContext.Summary))
+	out.WriteString(fmt.Sprintf("Voice/Tone: %s\n", data.PersonaContext.VoiceTone))
+	out.WriteString(fmt.Sprintf("Location: %s\n", data.PersonaContext.Identity.Location))
+	out.WriteString(fmt.Sprintf("Values: %s\n", strings.Join(data.PersonaContext.Values, ", ")))
+	out.WriteString("\n\n")
 
-	sb.WriteString("Voice & Values:\n")
-	sb.WriteString("Tone: " + r.PersonaContext.VoiceTone + "\n")
-	sb.WriteString("Values: " + strings.Join(r.PersonaContext.Values, ", ") + "\n\n")
-
-	sb.WriteString("Education:\n")
-	for _, edu := range r.Education {
-		sb.WriteString(fmt.Sprintf("- %s at %s (%s – %s)\n  %s\n",
-			edu.Name, edu.Institution, edu.StartDate, edu.EndDate, edu.Description))
-	}
-	sb.WriteString("\n")
-
-	sb.WriteString("Work Experience:\n")
-	for _, exp := range r.WorkExperience {
-		sb.WriteString(fmt.Sprintf("- %s at %s (%s – %s)\n  %s\n",
-			exp.Name, exp.Institution, exp.StartDate, exp.EndDate, exp.Description))
-		for _, proj := range exp.Projects {
-			sb.WriteString(fmt.Sprintf("    · Project: %s — %s\n", proj.Title, proj.Description))
+	// Education
+	for _, edu := range data.Education {
+		out.WriteString(fmt.Sprintf("Education: %s at %s (%s to %s)\n", edu.Name, edu.Institution, edu.StartDate, edu.EndDate))
+		out.WriteString(fmt.Sprintf("Description: %s\n", edu.Description))
+		if len(edu.Skills) > 0 {
+			out.WriteString(fmt.Sprintf("Skills: %s\n", strings.Join(edu.Skills, ", ")))
 		}
-	}
-	sb.WriteString("\n")
-
-	sb.WriteString("Projects:\n")
-	for _, proj := range r.Projects {
-		sb.WriteString(fmt.Sprintf("- %s (%s – %s)\n  %s\n",
-			proj.Name, proj.StartDate, proj.EndDate, proj.Description))
+		if len(edu.Leadership) > 0 {
+			out.WriteString(fmt.Sprintf("Leadership: %s\n", strings.Join(edu.Leadership, ", ")))
+		}
+		out.WriteString("\n")
 	}
 
-	sb.WriteString("\nHobbies:\n")
-	for _, h := range r.Hobbies {
-		sb.WriteString(fmt.Sprintf("- %s: %s\n", h.Name, h.Description))
+	// Work
+	for _, exp := range data.WorkExperience {
+		out.WriteString(fmt.Sprintf("Experience: %s at %s (%s to %s)\n", exp.Name, exp.Institution, exp.StartDate, exp.EndDate))
+		out.WriteString(fmt.Sprintf("Description: %s\n", exp.Description))
+		if len(exp.Skills) > 0 {
+			out.WriteString(fmt.Sprintf("Skills: %s\n", strings.Join(exp.Skills, ", ")))
+		}
+		for _, proj := range exp.Projects {
+			out.WriteString(fmt.Sprintf("Project: %s — %s\n", proj.Title, proj.Description))
+		}
+		out.WriteString("\n")
 	}
 
-	return sb.String()
+	// Projects
+	for _, proj := range data.Projects {
+		out.WriteString(fmt.Sprintf("Project: %s (%s to %s)\n", proj.Name, proj.StartDate, proj.EndDate))
+		out.WriteString(fmt.Sprintf("Description: %s\n", proj.Description))
+		if len(proj.Skills) > 0 {
+			out.WriteString(fmt.Sprintf("Skills: %s\n", strings.Join(proj.Skills, ", ")))
+		}
+		out.WriteString(fmt.Sprintf("Tags: %s\n", strings.Join(proj.Tags, ", ")))
+		out.WriteString("\n")
+	}
+
+	// Hobbies
+	for _, h := range data.Hobbies {
+		out.WriteString(fmt.Sprintf("Hobby: %s — %s\n", h.Name, h.Description))
+		if len(h.Highlights) > 0 {
+			out.WriteString(fmt.Sprintf("Highlights: %s\n", strings.Join(h.Highlights, ", ")))
+		}
+		out.WriteString("\n")
+	}
+
+	return out.String()
 }

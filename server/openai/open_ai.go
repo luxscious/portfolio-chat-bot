@@ -117,7 +117,7 @@ Please extract the most relevant work experiences, projects, education, or perso
 	}
 
 	var buf bytes.Buffer
-	flatResume := resumeData.FlattenResume()
+	flatResume := resume.FlattenResume(resumeData)
 	err = tmpl.Execute(&buf, map[string]interface{}{
 		"Identity":   resumeData.PersonaContext.Identity,
 		"FlatResume": flatResume,
@@ -149,5 +149,5 @@ User Question:
 	return CallOpenAI([]db.ChatMessage{
 		{Role: "system", Content: systemPrompt},
 		{Role: "user", Content: userPrompt},
-	}, "gpt-4")
+	}, "gpt-4o-mini")
 }
