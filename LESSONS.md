@@ -89,25 +89,6 @@ Build a highly accurate and natural-sounding resume chatbot that answers questio
 
 ---
 
-### 5. Setup, Debugging, & API Pitfalls
-
-- **Environment Issues**:
-
-  - `OPENAI_API_KEY` not loading from `.env` when running via `go run .`.
-  - Solution: Confirm `config.LoadEnv()` is called in `init()`.
-
-- **API Versioning**:
-
-  - Assistant API now requires header: `OpenAI-Beta: assistants=v2` — this was missing initially.
-
-- **Parsing Errors**:
-
-  - Errors like `invalid character 'H'`, `unexpected end of JSON`, `invalid escape character` — traced to malformed stringified JSON.
-
-**🔁 Lesson**: Add raw debug output to log replies. Validate assistant output thoroughly and anticipate fallback handling.
-
----
-
 ## ✅ Overall Takeaways
 
 - Start simple but plan to scale: local embedding -> OpenAI vector -> maybe back to RAGFlow with metadata control.
