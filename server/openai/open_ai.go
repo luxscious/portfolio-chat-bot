@@ -6,15 +6,13 @@ import (
 	"fmt"
 	"go-ai/config"
 	"go-ai/db"
-	"go-ai/resume"
 	"io"
 	"net/http"
-	"text/template"
 )
 
 type OpenAIChatRequest struct {
-	Model    string            `json:"model"`
-	Messages []db.ChatMessage  `json:"messages"`
+	Model    string           `json:"model"`
+	Messages []db.ChatMessage `json:"messages"`
 }
 
 type OpenAIChatResponse struct {
@@ -22,20 +20,7 @@ type OpenAIChatResponse struct {
 		Message db.ChatMessage `json:"message"`
 	} `json:"choices"`
 }
-// Helper Functions
-func BuildSystemPrompt(p resume.PersonaContext) (string, error) {
-	tmpl, err := template.New("prompt").Parse(p.PromptTemplate)
-	if err != nil {
-		return "", fmt.Errorf("template parsing failed: %w", err)
-	}
 
-	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, p); err != nil {
-		return "", fmt.Errorf("template execution failed: %w", err)
-	}
-
-	return buf.String(), nil
-}
 // CallOpenAI sends messages to OpenAI Chat Completion API
 func CallOpenAI(messages []db.ChatMessage, model string) (string, error) {
 	apiKey := config.GetOpenAIKey()
@@ -80,95 +65,40 @@ func CallOpenAI(messages []db.ChatMessage, model string) (string, error) {
 	return apiResp.Choices[0].Message.Content, nil
 }
 
-// SmartQuery performs a 2-step GPT process: filter → generate
-func SmartQuery(resumeData *resume.ResumeData, userInput string) (string, error) {
-	// Step 1: extract relevant resume sections
-	relevantInfo, err := ExtractRelevantResumeInfo(resumeData, userInput)
+// SmartQuery dynamically builds context from user input, then generates a final response via GPT
+func SmartQuery(userID, userInput string) (string, error) {
+	// Step 1: Build relevant resume context from Neo4j
+	context, err := BuildChatContext(userInput)
 	if err != nil {
-		return "", fmt.Errorf("step 1 (filter) failed: %w", err)
+		return "", fmt.Errorf("❌ context build failed: %w", err)
 	}
 
-	// Step 2: generate the final answer using persona tone
-	finalAnswer, err := GeneratePersonalAnswer(resumeData, relevantInfo, userInput)
-	if err != nil {
-		return "", fmt.Errorf("step 2 (generate) failed: %w", err)
-	}
+	// Step 2: Compose final prompt to send to OpenAI
+	prompt := fmt.Sprintf(`Here is relevant background information:%s User question: "%s" Respond concisely and informatively using the resume context above.`, context, userInput)
 
-	return finalAnswer, nil
-}
-
-// ExtractRelevantResumeInfo uses GPT to identify the most relevant resume entries
-func ExtractRelevantResumeInfo(resumeData *resume.ResumeData, userInput string) (string, error) {
-	const extractionTemplate = `
-You are {{.Identity.Name}}'s assistant. You have her full resume below in JSON format.
-
-User's Question:
-{{.UserInput}}
-
-Resume (JSON):
-{{.FullResumeJSON}}
-
----
-
-Please extract the most relevant items from the resume that would help answer the user's question.
-
-Each item must match this format:
-
-{
-  "id": "exact-id-from-json",
-  "startDate": "YYYY-MM-DD", // omit if not applicable
-  "endDate": "YYYY-MM-DD",
-  "name": "Exact name",
-  "description": "Why it's relevant to the question",
-  "institution": "If applicable",
-  "skills": ["tech1", "tech2"],
-  "tags": ["Project", "Education", "Trait", ...],
-  "type": "project" | "education" | "experience" | "trait",
-  "featured": true|false
-}
-
-Return a JSON array of all relevant items. Use exact values from the provided JSON resume.
-`
-
-	tmpl, err := template.New("resumeExtraction").Parse(extractionTemplate)
-	if err != nil {
-		return "", err
-	}
-
-	var buf bytes.Buffer
-
-	// Serialize the full resume data to JSON
-	resumeJSON, err := json.MarshalIndent(resumeData, "", "  ")
-	if err != nil {
-		return "", err
-	}
-
-	err = tmpl.Execute(&buf, map[string]interface{}{
-		"Identity":       resumeData.PersonaContext.Identity,
-		"UserInput":      userInput,
-		"FullResumeJSON": string(resumeJSON),
-	})
-	if err != nil {
-		return "", err
-	}
-
-	return CallOpenAI([]db.ChatMessage{
-		{Role: "system", Content: "You are a helpful assistant."},
-		{Role: "user", Content: buf.String()},
+	// Step 3: Send to OpenAI
+	response, err := CallOpenAI([]db.ChatMessage{
+		{Role: "system", Content: BuildPersonaSystemPrompt()},
+		{Role: "user", Content: prompt},
 	}, "gpt-3.5-turbo")
-}
 
-
-func GeneratePersonalAnswer(resumeData *resume.ResumeData, relevantInfo, userInput string) (string, error) {
-	systemPrompt, err := BuildSystemPrompt(resumeData.PersonaContext)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("❌ OpenAI call failed: %w", err)
 	}
 
-	userPrompt := fmt.Sprintf(`Relevant Resume Info: %s User Question: %s`, relevantInfo, userInput)
+	return response, nil
+}
+func BuildPersonaSystemPrompt() string {
+	return `
+You are Gabriella, a Lebanese-Greek software engineer and cybersecurity researcher based in Canada. 
+You're energetic, persistent, and have a passion for EV security, full-stack engineering, and gaming.
+Respond to user questions using this tone: youthful yet professional, confident but humble. Don't use words for the sake of sounding intelligent.
 
-	return CallOpenAI([]db.ChatMessage{
-		{Role: "system", Content: systemPrompt},
-		{Role: "user", Content: userPrompt},
-	}, "gpt-4o-mini")
+
+Speak in the first person ("I", "my work", etc). If you don’t have enough information to answer the user’s question,
+politely redirect them to ask something about your experience, skills, education, or hobbies.
+
+For example, say:
+"I'm not sure how to answer that one — maybe ask me about my projects, technical skills, or work experience instead!"
+`
 }
