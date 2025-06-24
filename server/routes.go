@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	// for reading env
 	"go-ai/config"
 	"go-ai/db"
 	"go-ai/openai"
@@ -26,6 +25,7 @@ type ChatResponse struct {
 	Content string `json:"content"`
 }
 
+// POST /chat
 func chatHandler(w http.ResponseWriter, r *http.Request) {
 	var req ChatRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -33,39 +33,17 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
-
-	// Use SmartQuery: 2-step GPT process (filter → generate)
-	reply, err := openai.SmartQuery(globalResumeData, req.Message)
+	reply, err := openai.SmartQuery(req.UserID, req.Message)
 	if err != nil {
 		http.Error(w, "Failed to generate response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Store messages in MongoDB
-	err = db.StoreMessage(req.UserID, db.ChatMessage{
-		UserID:    req.UserID,
-		Role:      "user",
-		Content:   req.Message,
-		Timestamp: time.Now(),
-	})
-	if err != nil {
-		http.Error(w, "Failed to store user message: "+err.Error(), http.StatusInternalServerError)
+	if err := storeChatPair(req.UserID, req.Message, reply); err != nil {
+		http.Error(w, "Failed to store chat messages: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = db.StoreMessage(req.UserID, db.ChatMessage{
-		UserID:    req.UserID,
-		Role:      "assistant",
-		Content:   reply,
-		Timestamp: time.Now(),
-	})
-	if err != nil {
-		http.Error(w, "Failed to store assistant message: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Send response
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(ChatResponse{
 		Role:    "assistant",
@@ -73,49 +51,69 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func handleGetChat(w http.ResponseWriter, r *http.Request){
+// GET /chat?userId=...
+func handleGetChat(w http.ResponseWriter, r *http.Request) {
 	userId := r.URL.Query().Get("userId")
-    if userId == "" {
-        http.Error(w, "Missing userId", http.StatusBadRequest)
-        return
-    }
+	if userId == "" {
+		http.Error(w, "Missing userId", http.StatusBadRequest)
+		return
+	}
 
-    messages, err := db.GetMessages(userId)
-    if err != nil {
-        http.Error(w, "Failed to fetch messages", http.StatusInternalServerError)
-        return
-    }
+	messages, err := db.GetMessages(userId)
+	if err != nil {
+		http.Error(w, "Failed to fetch messages", http.StatusInternalServerError)
+		return
+	}
 	if messages == nil {
-        messages = []db.ChatMessage{} 
-    }
+		messages = []db.ChatMessage{}
+	}
 
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(messages)
-
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(messages)
 }
 
+// Helper to store both user and assistant messages
+func storeChatPair(userId, userMsg, assistantMsg string) error {
+	now := time.Now()
+	if err := db.StoreMessage(userId, db.ChatMessage{
+		UserID:    userId,
+		Role:      "user",
+		Content:   userMsg,
+		Timestamp: now,
+	}); err != nil {
+		return err
+	}
+	if err := db.StoreMessage(userId, db.ChatMessage{
+		UserID:    userId,
+		Role:      "assistant",
+		Content:   assistantMsg,
+		Timestamp: now,
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Route setup
 func RegisterRoutes() http.Handler {
 	r := chi.NewRouter()
-	
-	// 🔐 Global middleware
+
+	// Middleware
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	origin := config.GetFrontendOrigin()
-	// 🌐 Enable CORS
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{origin}, // React server
+		AllowedOrigins:   []string{config.GetFrontendOrigin()},
 		AllowedMethods:   []string{"GET", "POST"},
 		AllowedHeaders:   []string{"Accept", "Content-Type"},
 		AllowCredentials: true,
 	}))
 
-	// ✅ Routes
+	// Routes
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("👋 Resume Chatbot backend is running!"))
 	})
 	r.Get("/chat", handleGetChat)
-
 	r.Post("/chat", chatHandler)
 
 	return r

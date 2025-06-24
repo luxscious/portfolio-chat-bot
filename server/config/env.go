@@ -6,12 +6,14 @@ import (
 
 	"github.com/joho/godotenv"
 )
+
 func LoadEnv() {
-	err := godotenv.Load(".env") 
+	err := godotenv.Load("../.env")
 	if err != nil {
-		log.Println("⚠️  No .env file found — relying on external environment variables.")
-	} 
+		log.Println("⚠️  No .env file found — relying on external environment variables.", err)
+	}
 }
+
 // GetOpenAIKey fetches the OpenAI API key from environment
 func GetOpenAIKey() string {
 	key := os.Getenv("OPENAI_API_KEY")
@@ -57,7 +59,6 @@ func GetServerPort() string {
 	return ":" + port
 }
 
-
 // Mongo config accessors
 func GetMongoURI() string {
 	uri := os.Getenv("MONGO_URI")
@@ -81,4 +82,32 @@ func GetMongoCollection() string {
 		log.Fatal("❌ MONGO_COLLECTION not set in environment")
 	}
 	return coll
+}
+
+//
+// 🌱 NEO4J
+//
+
+func GetNeo4jURI() string {
+	uri := os.Getenv("NEO4J_URI")
+	if uri == "" {
+		log.Fatal("❌ NEO4J_URI not set in environment")
+	}
+	return uri
+}
+
+func GetNeo4jUser() string {
+	user := os.Getenv("NEO4J_USER")
+	if user == "" {
+		log.Fatal("❌ NEO4J_USER not set in environment")
+	}
+	return user
+}
+
+func GetNeo4jPass() string {
+	pass := os.Getenv("NEO4J_PASS")
+	if pass == "" {
+		log.Fatal("❌ NEO4J_PASS not set in environment")
+	}
+	return pass
 }
