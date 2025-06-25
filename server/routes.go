@@ -14,7 +14,10 @@ import (
 	"github.com/go-chi/cors"
 )
 
-// STRUCTS
+// ─────────────────────────────────────────────────────────────────────────────
+// Request/Response Types
+// ─────────────────────────────────────────────────────────────────────────────
+
 type ChatRequest struct {
 	UserID  string `json:"userId"`
 	Message string `json:"content"`
@@ -25,7 +28,10 @@ type ChatResponse struct {
 	Content string `json:"content"`
 }
 
-// POST /chat
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /chat — handles user input and returns GPT response
+// ─────────────────────────────────────────────────────────────────────────────
+
 func chatHandler(w http.ResponseWriter, r *http.Request) {
 	var req ChatRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -51,7 +57,10 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GET /chat?userId=...
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /chat?userId=... — fetches past chat messages
+// ─────────────────────────────────────────────────────────────────────────────
+
 func handleGetChat(w http.ResponseWriter, r *http.Request) {
 	userId := r.URL.Query().Get("userId")
 	if userId == "" {
@@ -72,36 +81,33 @@ func handleGetChat(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(messages)
 }
 
-// Helper to store both user and assistant messages
+// ─────────────────────────────────────────────────────────────────────────────
+// Internal: Store both user + assistant message to DB
+// ─────────────────────────────────────────────────────────────────────────────
+
 func storeChatPair(userId, userMsg, assistantMsg string) error {
 	now := time.Now()
-	if err := db.StoreMessage(userId, db.ChatMessage{
-		UserID:    userId,
-		Role:      "user",
-		Content:   userMsg,
-		Timestamp: now,
-	}); err != nil {
-		return err
-	}
-	if err := db.StoreMessage(userId, db.ChatMessage{
-		UserID:    userId,
-		Role:      "assistant",
-		Content:   assistantMsg,
-		Timestamp: now,
-	}); err != nil {
-		return err
+	for _, msg := range []db.ChatMessage{
+		{UserID: userId, Role: "user", Content: userMsg, Timestamp: now},
+		{UserID: userId, Role: "assistant", Content: assistantMsg, Timestamp: now},
+	} {
+		if err := db.StoreMessage(userId, msg); err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
-// Route setup
+// ─────────────────────────────────────────────────────────────────────────────
+// RegisterRoutes sets up HTTP routes and middleware
+// ─────────────────────────────────────────────────────────────────────────────
+
 func RegisterRoutes() http.Handler {
 	r := chi.NewRouter()
 
-	// Middleware
+	// Middleware stack
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{config.GetFrontendOrigin()},
 		AllowedMethods:   []string{"GET", "POST"},

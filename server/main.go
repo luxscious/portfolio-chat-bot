@@ -14,6 +14,12 @@ func init() {
 	// Initialize databases
 	db.InitMongo()
 	db.InitNeo4j()
+
+	// Load graph schema once at startup
+	if err := db.LoadGraphSchemaOnce(); err != nil {
+		log.Fatalf("❌ Failed to load graph schema: %v", err)
+	}
+	log.Println("✅ Graph schema loaded")
 }
 
 func main() {

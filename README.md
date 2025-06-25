@@ -28,23 +28,23 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 └────────┬───────────┘
          │ POST /chat
          ▼
-┌──────────────────────────────┐
-│ 2. Go Backend                │
-│ (API Server)                 │
-│                              │
-│ - Loads resume.json          │
-│ - Splits into semantic chunks│
-│ - Generates embeddings       │
-│ - Ranks top 3 relevant chunks│
-│ - Builds prompt w/ persona   │
-│ - Sends to OpenAI API        │
-│ - Stores chat history        │
-└────────┬─────────────────────┘
+┌────────────────────────────────────────────┐
+│ 2. Go Backend (API Server)                │
+│                                            │
+│ - Accepts user input                       │
+│ - Calls Ollama for entity extraction       │
+│ - Uses Neo4j to fetch relevant context     │
+│   (skills, tags, hobbies, companies)       │
+│ - Retrieves recent chat history            │
+│ - Builds prompt with persona + context     │
+│ - Sends prompt to OpenAI API               │
+│ - Stores chat history                      │
+└────────┬───────────────────────────────────┘
          │
          ▼
 ┌────────────────────┐
 │ 3. OpenAI API      │
-│      (GPT-4)       │
+│   (gpt-3.5-turbo)  │
 └────────┬───────────┘
          ▼
 ┌────────────────────┐
@@ -140,6 +140,7 @@ git clone https://github.com/luxscious/portfolio-chat-bot.git
 ```bash
 cp .env.example .env
 ```
+
 do this for both frontend and backend folders
 
 Update the following:

@@ -111,3 +111,11 @@ func GetNeo4jPass() string {
 	}
 	return pass
 }
+
+func GetOllamaURI() string {
+	uri := os.Getenv("OLLAMA_URI")
+	if uri == "" {
+		log.Fatal("❌ OLLAMA_URI not set in environment")
+	}
+	return uri
+}
