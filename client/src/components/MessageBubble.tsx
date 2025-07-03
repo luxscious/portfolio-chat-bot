@@ -2,8 +2,6 @@ import { Message } from "@/types";
 import { useTypingEffect } from "@/hooks/TypingEffect";
 import { Ellipsis } from "lucide-react";
 import { useEffect } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-
 interface Props {
   message: Message;
   onTypingDone?: () => void;
@@ -38,16 +36,6 @@ export default function MessageBubble({ message, onTypingDone }: Props) {
         isUser ? "justify-end" : "justify-start"
       }`}
     >
-      {/* Bot Avatar */}
-      {!isUser && (
-        <Avatar className="w-18 h-18">
-          <AvatarImage
-            src={`${import.meta.env.VITE_BLOB_BASE_URL}/avatar.png`}
-          />
-          <AvatarFallback>GG</AvatarFallback>
-        </Avatar>
-      )}
-
       {/* Message Bubble */}
       <div
         className={`px-4 py-3 max-w-2xl text-sm rounded-md break-words whitespace-pre-wrap ${

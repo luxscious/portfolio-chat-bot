@@ -1,20 +1,73 @@
 import ChatWindow from "@/components/ChatWindow";
 import MessageInput from "@/components/MessageInput";
+import AnimatedIcon from "@/components/ui/animated_icon";
 import { Button } from "@/components/ui/button";
 import { useChat } from "@/hooks/ChatPage";
+import { Github, Linkedin, Minus, Monitor } from "lucide-react";
 
 export default function ChatPage() {
   const { messages, sendMessage, isLoading, isTyping, setIsTyping } = useChat();
+
   return (
     <div className="flex h-screen">
       {/* Left Sidebar */}
-      <div className="w-1/4 bg-gray-900 p-4">
-        {/* Put Log top left here */}
-        {/* <img
-          src="https://media.licdn.com/dms/image/v2/D4D03AQEWeLpaykX60g/profile-displayphoto-shrink_200_200/B4DZdf9DGXHwAc-/0/1749661529229?e=1755734400&v=beta&t=Kc4jS-8iO4Irp0YfMAzr74sWwIsQcrgxSL8aGOueNb8"
-          alt="Bot Avatar"
-          className="w-20 h-20 rounded-full object-cover"
-        /> */}
+      <div className="w-1/4 h-full bg-gray-900 p-4 flex flex-col items-center">
+        {/* Profile Image */}
+        <div className="flex h-1/3 justify-center">
+          <div className="relative w-full max-w-xs aspect-square mx-auto">
+            {/* Blurred Background */}
+            <div
+              className="absolute inset-0 bg-center bg-cover blur-lg scale-110 rounded"
+              style={{
+                backgroundImage: `url(${
+                  import.meta.env.VITE_BLOB_BASE_URL
+                }/PFP.jpg)`,
+              }}
+            />
+            {/* Foreground Image */}
+            <img
+              src={`${import.meta.env.VITE_BLOB_BASE_URL}/PFP.jpg`}
+              alt="Profile"
+              className="relative z-10 w-full h-full object-cover object-[center_30%]"
+            />
+          </div>
+        </div>
+
+        {/* Intro Text and Links */}
+        <div className="flex h-1/3 w-full flex-col px-12 py-6 text-white">
+          <p className="font-['Inter'] pb-4 max-w-2xl">
+            Hi there! This site is an interactive chatbot I built to showcase my
+            experience and projects in a more engaging way. Instead of just
+            reading a static resume, you can ask questions and explore my work
+            dynamically. Feel free to start a chat or connect with me!
+          </p>
+
+          <div className="flex items-center justify-between">
+            {/* Icons */}
+            <div className="flex gap-4 h-full">
+              <AnimatedIcon href="https://github.com/luxscious">
+                <Github />
+              </AnimatedIcon>
+              <AnimatedIcon href="https://www.linkedin.com/in/gabriella-gerges/">
+                <Linkedin />
+              </AnimatedIcon>
+              <AnimatedIcon href="https://luxscious.github.io/">
+                <Monitor />
+              </AnimatedIcon>
+            </div>
+
+            {/* - + Signature */}
+            <div className="flex items-center">
+              <Minus className="w-5 h-5 mt-4" strokeWidth={0.5} />
+              <img
+                className="h-16"
+                src={`${import.meta.env.VITE_BLOB_BASE_URL}/signature.svg`}
+                style={{ filter: "invert(1)" }}
+                alt="Signature"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Center Chatbot */}
@@ -24,6 +77,7 @@ export default function ChatPage() {
             messages={messages}
             onTypingDone={() => setIsTyping(false)}
           />
+
           <MessageInput
             onSend={sendMessage}
             isDisabled={isLoading || isTyping}
@@ -49,8 +103,8 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* Right Projects */}
-      <div className="w-1/4  bg-gray-900 p-4">
+      {/* Right Panel */}
+      <div className="w-1/4 bg-gray-900 p-4">
         {/* Right panel (maybe project cards?) */}
       </div>
     </div>
