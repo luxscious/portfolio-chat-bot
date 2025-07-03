@@ -160,3 +160,45 @@ cd ../server && go run .
 
 - Look into costs + latency advantages of combining intent parsing and response into one LLM
 - Caching to save on DB lookup
+
+---
+
+## 🐳 Docker Setup
+
+This project is also configured to run all services via Docker Compose:
+
+- Neo4j (graph database)
+- Ollama (local LLM server)
+- Go backend API
+
+### 🛠️ Prerequisites
+
+- Docker and Docker Compose.
+
+### 📝 Create `.env`
+
+- Put all variables in project root `.env` file
+
+### ⚡ Load environment variables (Need to do this for Neo4J Auth)
+
+```bash
+export $(cat .env | xargs)
+```
+
+### 🐳 Build and Run
+
+```bash
+docker compose up --build
+```
+
+This starts Neo4j, Ollama, and your backend.
+
+### 🛑 Stopping
+
+```bash
+docker compose down
+```
+
+### ✅ Notes
+
+- The frontend runs separately with Vite.
