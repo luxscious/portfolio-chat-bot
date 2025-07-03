@@ -27,7 +27,7 @@ export default function ChatPage() {
       <div className="w-full lg:w-1/4 bg-gray-900 p-4 flex flex-col items-center">
         {/* Profile Image */}
         <div className="flex h-1/3 justify-center">
-          <div className="relative w-full max-w-xs aspect-square mx-auto">
+          <div className="relative w-full max-w-xs aspect-square mx-auto pt-6">
             {/* Blurred Background */}
             <div
               className="absolute inset-0 bg-center bg-cover blur-lg scale-110 rounded"
