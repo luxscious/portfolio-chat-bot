@@ -4,14 +4,27 @@ import AnimatedIcon from "@/components/ui/animated_icon";
 import { Button } from "@/components/ui/button";
 import { useChat } from "@/hooks/ChatPage";
 import { Github, Linkedin, Minus, Monitor } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github-dark.css";
 
 export default function ChatPage() {
   const { messages, sendMessage, isLoading, isTyping, setIsTyping } = useChat();
 
+  const exampleMarkdown = `
+\`\`\`bash
+👤 What skills do you have?
+🤖 I'm experienced in React, Node.js, and building secure IoT applications.
+
+👤 Can you show me your latest projects?
+🤖 Sure! I've recently built an AI resume chatbot and a smart charging system simulator.
+\`\`\`
+`;
+
   return (
-    <div className="flex h-screen">
+    <div className="flex flex-col gap-4 lg:flex-row lg:gap-0 h-auto lg:h-screen">
       {/* Left Sidebar */}
-      <div className="w-1/4 h-full bg-gray-900 p-4 flex flex-col items-center">
+      <div className="w-full lg:w-1/4 bg-gray-900 p-4 flex flex-col items-center">
         {/* Profile Image */}
         <div className="flex h-1/3 justify-center">
           <div className="relative w-full max-w-xs aspect-square mx-auto">
@@ -34,7 +47,7 @@ export default function ChatPage() {
         </div>
 
         {/* Intro Text and Links */}
-        <div className="flex h-1/3 w-full flex-col px-12 py-6 text-white">
+        <div className="flex h-1/3 w-full flex-col px-4 py-6 text-white">
           <p className="font-['Inter'] pb-4 max-w-2xl">
             Hi there! This site is an interactive chatbot I built to showcase my
             experience and projects in a more engaging way. Instead of just
@@ -55,23 +68,43 @@ export default function ChatPage() {
                 <Monitor />
               </AnimatedIcon>
             </div>
+          </div>
+        </div>
 
-            {/* - + Signature */}
-            <div className="flex items-center">
-              <Minus className="w-5 h-5 mt-4" strokeWidth={0.5} />
-              <img
-                className="h-16"
-                src={`${import.meta.env.VITE_BLOB_BASE_URL}/signature.svg`}
-                style={{ filter: "invert(1)" }}
-                alt="Signature"
-              />
-            </div>
+        {/* Example Markdown */}
+        <div className="mt-8 w-full text-xs leading-relaxed">
+          {/* Label */}
+          <div className="bg-gray-800 text-gray-300 text-[10px] px-2 py-1 rounded-t-lg w-max">
+            example text
+          </div>
+          {/* Code block */}
+          <div className="w-full rounded-b-lg">
+            <ReactMarkdown
+              rehypePlugins={[rehypeHighlight]}
+              components={{
+                code({ node, inline, className, children, ...props }) {
+                  return !inline ? (
+                    <pre className="m-0 whitespace-pre-wrap break-words rounded-b-lg p-2 overflow-x-auto">
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    </pre>
+                  ) : (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  );
+                },
+              }}
+            >
+              {exampleMarkdown}
+            </ReactMarkdown>
           </div>
         </div>
       </div>
 
       {/* Center Chatbot */}
-      <div className="w-1/2 bg-gray-900 p-6 flex justify-center pb-12">
+      <div className="w-full lg:w-1/2 bg-gray-900 p-6 flex justify-center pb-12">
         <div className="w-full space-y-4">
           <ChatWindow
             messages={messages}
@@ -95,6 +128,8 @@ export default function ChatPage() {
                 href={`${
                   import.meta.env.VITE_BLOB_BASE_URL
                 }/Gabriella_Gerges_Resume.pdf`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Resumé
               </a>
@@ -104,7 +139,7 @@ export default function ChatPage() {
       </div>
 
       {/* Right Panel */}
-      <div className="w-1/4 bg-gray-900 p-4">
+      <div className="hidden lg:block w-full lg:w-1/4 bg-gray-900 p-4">
         {/* Right panel (maybe project cards?) */}
       </div>
     </div>
