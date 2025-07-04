@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "client/**"
+      - ".github/workflows/deploy.yml"
 
 permissions:
   contents: write
@@ -24,6 +27,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+
       - name: Create .env file
         run: |
           touch .env
