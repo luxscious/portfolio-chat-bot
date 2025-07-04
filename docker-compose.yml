@@ -16,28 +16,26 @@ services:
       sh -c "
         ollama serve &
         sleep 5 &&
-        curl -X POST http://localhost:11434/api/generate -H 'Content-Type: application/json' -d '{\"model\":\"llama3\",\"prompt\":\"Ready\"}' || true &&
+        curl -X POST http://0.0.0.0:11434/api/generate \
+          -H 'Content-Type: application/json' \
+          -d '{\"model\":\"llama3\",\"prompt\":\"Ready\"}' || true &&
         wait
       "
-    # If we want to limit RAM usage:
-    # deploy:
-    #   resources:
-    #     limits:
-    #       memory: 12G
+
   backend:
-    build:
-      context: ./server
     ports:
       - "8080:8080"
+    build:
+      context: ./server
     env_file:
       - "./server/.env"
-    networks:
-      - mynetwork
     depends_on:
       ollama:
         condition: service_started
+    networks:
+      - mynetwork
+
 volumes:
-  neo4j_data:
   ollama_models:
 
 networks:
