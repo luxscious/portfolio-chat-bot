@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   neo4j:
-    image: neo4j:5-enterprise
+    image: neo4j:5
     environment:
       - NEO4J_AUTH=${NEO4J_AUTH}
     ports:
