@@ -5,7 +5,6 @@ services:
     image: neo4j:5
     environment:
       - NEO4J_AUTH=${NEO4J_AUTH}
-
     ports:
       - "7687:7687" # Bolt protocol (backend connects here)
       - "7474:7474" # Neo4j browser UI
@@ -17,11 +16,26 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - mynetwork
   ollama:
     build:
       context: ./ollama
     ports:
       - "11434:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    volumes:
+      - ollama_models:/root/.ollama
+    networks:
+      - mynetwork
+    command: >
+      sh -c "
+        ollama serve &
+        sleep 5 &&
+        curl -X POST http://localhost:11434/api/generate -H 'Content-Type: application/json' -d '{\"model\":\"llama3\",\"prompt\":\"Ready\"}' || true &&
+        wait
+      "
     # If we want to limit RAM usage:
     # deploy:
     #   resources:
@@ -35,6 +49,8 @@ services:
       - "8080:8080"
     env_file:
       - "./server/.env"
+    networks:
+      - mynetwork
     depends_on:
       neo4j:
         condition: service_healthy
@@ -42,3 +58,7 @@ services:
         condition: service_started
 volumes:
   neo4j_data:
+  ollama_models:
+
+networks:
+  mynetwork:

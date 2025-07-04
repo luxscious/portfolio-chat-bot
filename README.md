@@ -175,6 +175,28 @@ This project is also configured to run all services via Docker Compose:
 
 - Docker and Docker Compose.
 
+Sure—here’s that as a **clean Markdown canvas snippet** you can drop right into your README:
+
+---
+
+## 📥 Pull Ollama Model
+
+Before running the containers, **make sure you have downloaded the model you want Ollama to serve.**
+
+You need to **enter the Ollama container shell** to pull the model.
+
+For example:
+
+```bash
+docker compose run --rm ollama bash
+```
+
+Then inside the container shell:
+
+```bash
+ollama pull llama3
+```
+
 ### 📝 Create `.env`
 
 - Put all variables in project root `.env` file
