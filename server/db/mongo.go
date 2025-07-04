@@ -2,10 +2,11 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"go-ai/config"
 	"log"
 	"time"
-        "fmt"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -23,7 +24,7 @@ var collection *mongo.Collection
 
 // InitMongo connects to MongoDB using env variables and sets up the collection
 func InitMongo() {
-		
+
 	uri := config.GetMongoURI()
 	dbName := config.GetMongoDB()
 	collName := config.GetMongoCollection()
@@ -49,45 +50,38 @@ func StoreMessage(userID string, msg ChatMessage) error {
 }
 
 // GetMessages retrieves all messages for a user
-// GetMessages retrieves all messages for a user
 func GetMessages(userID string) ([]ChatMessage, error) {
-    log.Printf("[DEBUG] Querying MonoDB")
-    var messages []ChatMessage
+	var messages []ChatMessage
 
-    filter := bson.M{"user_id": userID}
-    findOptions := options.Find().SetSort(bson.D{{Key: "timestamp", Value: 1}})
+	filter := bson.M{"user_id": userID}
+	findOptions := options.Find().SetSort(bson.D{{Key: "timestamp", Value: 1}})
 
-    log.Printf("[DEBUG] Querying MongoDB with filter: %+v", filter)
+	cursor, err := collection.Find(context.TODO(), filter, findOptions)
+	if err != nil {
+		log.Printf("[ERROR] Find() failed: %v", err)
+		return nil, fmt.Errorf("Find() failed: %w", err)
+	}
+	defer func() {
+		if err := cursor.Close(context.TODO()); err != nil {
+			log.Printf("[WARN] Failed to close cursor: %v", err)
+		}
+	}()
 
-    cursor, err := collection.Find(context.TODO(), filter, findOptions)
-    if err != nil {
-        log.Printf("[ERROR] Find() failed: %v", err)
-        return nil, fmt.Errorf("Find() failed: %w", err)
-    }
-    defer func() {
-        if err := cursor.Close(context.TODO()); err != nil {
-            log.Printf("[WARN] Failed to close cursor: %v", err)
-        }
-    }()
+	count := 0
+	for cursor.Next(context.TODO()) {
+		var msg ChatMessage
+		if err := cursor.Decode(&msg); err != nil {
+			log.Printf("[ERROR] Decode() failed: %v", err)
+			return nil, fmt.Errorf("Decode() failed: %w", err)
+		}
+		messages = append(messages, msg)
+		count++
+	}
 
-    count := 0
-    for cursor.Next(context.TODO()) {
-        var msg ChatMessage
-        if err := cursor.Decode(&msg); err != nil {
-            log.Printf("[ERROR] Decode() failed: %v", err)
-            return nil, fmt.Errorf("Decode() failed: %w", err)
-        }
-        messages = append(messages, msg)
-        count++
-    }
+	if err := cursor.Err(); err != nil {
+		log.Printf("[ERROR] Cursor iteration error: %v", err)
+		return nil, fmt.Errorf("Cursor iteration error: %w", err)
+	}
 
-    if err := cursor.Err(); err != nil {
-        log.Printf("[ERROR] Cursor iteration error: %v", err)
-        return nil, fmt.Errorf("Cursor iteration error: %w", err)
-    }
-
-    log.Printf("[DEBUG] Fetched %d messages for user_id=%s", count, userID)
-
-    return messages, nil
+	return messages, nil
 }
-
