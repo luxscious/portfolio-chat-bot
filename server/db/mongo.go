@@ -80,7 +80,7 @@ func GetMessages(userID string) ([]ChatMessage, error) {
 
 	if err := cursor.Err(); err != nil {
 		log.Printf("[ERROR] Cursor iteration error: %v", err)
-		return nil, fmt.Errorf("Cursor iteration error: %w", err)
+		return nil, fmt.Errorf("cursor iteration error: %w", err)
 	}
 
 	return messages, nil

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -51,10 +52,13 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(ChatResponse{
+	if err := json.NewEncoder(w).Encode(ChatResponse{
 		Role:    "assistant",
 		Content: reply,
-	})
+	}); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -78,7 +82,10 @@ func handleGetChat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(messages)
+	if err := json.NewEncoder(w).Encode(messages); err != nil {
+		http.Error(w, "Failed to encode messages", http.StatusInternalServerError)
+		return
+	}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -117,11 +124,13 @@ func RegisterRoutes() http.Handler {
 
 	// Routes
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("👋 Resume Chatbot backend is running!"))
+		if _, err := w.Write([]byte("👋 Resume Chatbot backend is running!")); err != nil {
+			// Log the error
+			fmt.Println("Failed to write response:", err)
+		}
 	})
 	r.Get("/chat", handleGetChat)
 	r.Post("/chat", chatHandler)
 
 	return r
 }
-
