@@ -1,9 +1,10 @@
+# ==========================
 # Build stage
-FROM golang:1.24.4 as builder
+# ==========================
+FROM golang:1.24.4 AS builder
 
 WORKDIR /app
 
-# Copy module files separately for better layer caching
 COPY go.mod go.sum ./
 RUN go mod download
 
@@ -11,19 +12,24 @@ COPY . .
 
 RUN go mod tidy
 
-# Cross-compile to amd64 for Debian runtime
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o app
+# Build a fully static binary
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o app .
 
+# ==========================
 # Runtime stage
-FROM debian:bullseye-slim
+# ==========================
+FROM debian:bookworm-slim
 
-# Install certs for HTTPS connections
-RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
-
+RUN apt-get update && apt-get install -y ca-certificates dnsutils
 WORKDIR /app
 
+# Copy the statically linked binary
 COPY --from=builder /app/app .
+
+# Copy CA certs so HTTPS works
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 EXPOSE 8080
 
 CMD ["./app"]
+

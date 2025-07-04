@@ -24,6 +24,8 @@ func init() {
 
 func main() {
 	port := config.GetServerPort()
-	log.Printf("✅ Server started on http://localhost%s\n", port)
-	log.Fatal(http.ListenAndServe(port, RegisterRoutes()))
+	addr := "0.0.0.0" + port
+
+        log.Printf("✅ Server started on http://%s\n", addr)
+        log.Fatal(http.ListenAndServe(addr, RegisterRoutes()))
 }

@@ -40,3 +40,4 @@ volumes:
 
 networks:
   mynetwork:
+
