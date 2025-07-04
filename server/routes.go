@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"go-ai/config"
 	"go-ai/db"
 	"go-ai/openai"
 
@@ -109,7 +108,7 @@ func RegisterRoutes() http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{config.GetFrontendOrigin()},
+		AllowedOrigins:   []string{"http://localhost:5173"},
 		AllowedMethods:   []string{"GET", "POST"},
 		AllowedHeaders:   []string{"Accept", "Content-Type"},
 		AllowCredentials: true,
