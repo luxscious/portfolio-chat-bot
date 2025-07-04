@@ -16,20 +16,24 @@ services:
       sh -c "
         ollama serve &
         sleep 5 &&
-        curl -X POST http://localhost:11434/api/generate -H 'Content-Type: application/json' -d '{\"model\":\"llama3\",\"prompt\":\"Ready\"}' || true &&
+        curl -X POST http://0.0.0.0:11434/api/generate \
+          -H 'Content-Type: application/json' \
+          -d '{\"model\":\"llama3\",\"prompt\":\"Ready\"}' || true &&
         wait
       "
 
   backend:
+    ports:
+      - "8080:8080"
     build:
       context: ./server
-    # IMPORTANT: remove ports mapping, it's ignored in host mode
-    network_mode: host
     env_file:
       - "./server/.env"
     depends_on:
       ollama:
         condition: service_started
+    networks:
+      - mynetwork
 
 volumes:
   ollama_models:
