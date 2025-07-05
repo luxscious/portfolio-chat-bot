@@ -37,33 +37,26 @@ A personalized, first-person chatbot that answers questions based on my resume, 
              │
              ▼
      ┌────────────────┐
-     │   Ollama API   │
+     │   Ollama API   │  (DigitalOcean droplet)
      └──────┬─────────┘
             │
             ▼
      ┌────────────────┐
-     │   Neo4j DB     │
+     │ Neo4j Aura DB  │  (Managed Cloud)
      └──────┬─────────┘
             │
             ▼
      ┌────────────────┐
      │  OpenAI GPT    │
      └────────────────┘
-             ▼
-┌────────────────────────────┐
-│  React: renders reply      │
-└────────────────────────────┘
-└────────────────────────────┘
+             ▲
+             │
+     ┌────────────────┐
+     │   MongoDB Atlas│  (Cloud)
+     └────────────────┘
 ```
 
----
-
-## 🔍 Key Features
-
-- **Graph-Powered Prompting**: Semantic plans via Ollama → structured context from Neo4j
-- **Persona-Aware**: All responses are written in my own tone with first-person voice
-- **Mongo-Backed Memory**: Conversation stored per-user for persistence
-- **Small Talk Handling**: Recognizes vague input like “hi!” and skips AI calls
+- **Caddy Reverse Proxy** (on the host) provides HTTPS and routes traffic to the backend container.
 
 ---
 
@@ -71,22 +64,41 @@ A personalized, first-person chatbot that answers questions based on my resume, 
 
 ```
 portfolio-chat-bot/
-├── client/              # React + Vite frontend
+├── client/                  # React + Vite frontend
 │   ├── src/
-│   │   ├── components/  # UI + chat components
-│   │   ├── hooks/       # TypingEffect.ts etc.
-│   │   ├── lib/         # Utility functions
-│   │   ├── pages/       # ChatPage, App.tsx
-│   │   └── styles/      # Tailwind + custom CSS
-├── server/              # Go backend
-│   ├── config/          # .env loading
-│   ├── db/              # Neo4j + Mongo logic
-│   ├── openai/          # GPT + SmartQuery logic
-│   ├── ollama/          # Intent planning via LLaMA3
-│   ├── resume/          # resume.json and chunking
-│   ├── main.go          # Route binding
-│   └── routes.go        # Route definitions
+│   │   ├── components/      # UI + chat components
+│   │   ├── hooks/           # Custom React hooks
+│   │   ├── lib/             # Utility functions
+│   │   ├── pages/           # ChatPage, App.tsx, etc.
+│   │   └── styles/          # Tailwind + custom CSS
+│   ├── public/              # Static assets
+│   ├── .env.example         # Frontend env example
+│   ├── vite.config.ts       # Vite config
+│   └── ...                  # Other frontend files
+├── server/                  # Go backend
+│   ├── config/              # .env loading and config
+│   ├── db/                  # Neo4j + Mongo logic
+│   ├── openai/              # GPT + context builder logic
+│   ├── ollama/              # Intent planning via LLaMA3
+│   ├── resume/              # resume.json and chunking
+│   ├── main.go              # Entry point
+│   ├── routes.go            # Route definitions
+│   ├── Dockerfile           # Backend Dockerfile
+│   └── .env.example         # Backend env example
+├── docker-compose.yml       # Orchestrates backend + Ollama
+├── .github/
+│   └── workflows/           # GitHub Actions CI/CD
+│       ├── deploy-backend.yml
+│       └── deploy.yml
+└── README.md
 ```
+
+**Notes:**
+
+- Neo4j is now managed in the cloud (Aura), not as a local container.
+- Ollama runs on a dedicated DigitalOcean droplet, not locally.
+- Caddy runs on the host to provide HTTPS and reverse proxy.
+- MongoDB is typically managed via MongoDB Atlas (cloud), but can be local for dev.
 
 ---
 
@@ -253,3 +265,25 @@ You can find the workflow files in `.github/workflows/`:
 
 - `deploy-backend.yml` — Deploys the backend to the server.
 - `deploy.yml` — Deploys the frontend to GitHub Pages.
+
+## 🌐 Deployment Notes
+
+This project is deployed on a DigitalOcean server to ensure reliable performance and scalability.
+
+Why DigitalOcean?
+
+Resource Requirements for Llama 3:Running the Ollama Llama 3 model requires substantial memory and CPU resources, which are difficult to allocate reliably on local machines or small VMs.
+
+Production Stability:DigitalOcean provides predictable resource availability and uptime for hosting the backend API, Ollama server, and Caddy reverse proxy.
+
+Simplicity:The deployment uses Docker Compose to manage all services consistently across environments.
+
+How it Works
+
+Ollama ServiceHosts the Llama 3 model server (ollama serve), exposing the API on port 11434.
+
+Backend ServiceA Go API that proxies requests to Ollama and handles application logic.
+
+Caddy Reverse ProxyProvides automatic HTTPS with Let’s Encrypt certificates for secure public access.
+
+✅ Tip:If you want to run this stack locally, you’ll need a machine with enough RAM (8–16 GB recommended) to run the Llama 3 model without OOM errors.
