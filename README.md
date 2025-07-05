@@ -224,3 +224,32 @@ docker compose down
 ### ✅ Notes
 
 - The frontend runs separately with Vite.
+
+---
+
+## 🚀 CI/CD
+
+This project uses GitHub Actions for continuous integration and deployment:
+
+### Deployment
+
+- **Backend Deployment:**  
+  On every push to `main` that affects the backend (`server/**`), `docker-compose.yml`, or the backend deploy workflow, the backend is automatically deployed to the production server via SSH.  
+  The workflow:
+
+  1. Checks out the latest code.
+  2. Sets up SSH keys and known hosts.
+  3. Connects to the server, pulls the latest code, and runs `docker compose up --build -d`.
+
+- **Frontend Deployment:**  
+  On every push to `main` that affects the frontend (`client/**`), the frontend is built and deployed to GitHub Pages.  
+  The workflow:
+  1. Checks out the latest code.
+  2. Sets up Node.js and environment variables.
+  3. Installs dependencies and builds the Vite project.
+  4. Publishes the build output to GitHub Pages.
+
+You can find the workflow files in `.github/workflows/`:
+
+- `deploy-backend.yml` — Deploys the backend to the server.
+- `deploy.yml` — Deploys the frontend to GitHub Pages.
