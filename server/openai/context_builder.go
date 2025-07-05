@@ -20,14 +20,16 @@ func BuildContextFromGraphPlan(plan ollama.GraphQueryPlan) (string, error) {
 	}
 	plan.Filters = validFilters
 
-	// Build sectioned context from each target node type
 	for _, nodeType := range plan.TargetNodes {
 		switch nodeType {
-
 		case "Project":
 			projects, err := db.FindProjectsWithFilters(plan.Filters)
 			if err != nil || len(projects) == 0 {
-				continue
+				// Fallback: get all projects if none found
+				projects, err = db.FindProjectsWithFilters(nil)
+				if err != nil || len(projects) == 0 {
+					continue
+				}
 			}
 			var b strings.Builder
 			b.WriteString("Relevant Projects:\n")
@@ -45,7 +47,11 @@ func BuildContextFromGraphPlan(plan ollama.GraphQueryPlan) (string, error) {
 		case "WorkExperience":
 			experiences, err := db.FindWorkExperienceWithFilters(plan.Filters)
 			if err != nil || len(experiences) == 0 {
-				continue
+				// Fallback: get all work experiences if none found
+				experiences, err = db.FindWorkExperienceWithFilters(nil)
+				if err != nil || len(experiences) == 0 {
+					continue
+				}
 			}
 			var b strings.Builder
 			b.WriteString("Work Experience:\n")
@@ -57,7 +63,11 @@ func BuildContextFromGraphPlan(plan ollama.GraphQueryPlan) (string, error) {
 		case "Education":
 			education, err := db.FindEducationWithFilters(plan.Filters)
 			if err != nil || len(education) == 0 {
-				continue
+				// Fallback: get all education if none found
+				education, err = db.FindEducationWithFilters(nil)
+				if err != nil || len(education) == 0 {
+					continue
+				}
 			}
 			var b strings.Builder
 			b.WriteString("Education:\n")
@@ -69,7 +79,11 @@ func BuildContextFromGraphPlan(plan ollama.GraphQueryPlan) (string, error) {
 		case "Hobby":
 			hobbies, err := db.FindHobbiesWithFilters(plan.Filters)
 			if err != nil || len(hobbies) == 0 {
-				continue
+				// Fallback: get all hobbies if none found
+				hobbies, err = db.FindHobbiesWithFilters(nil)
+				if err != nil || len(hobbies) == 0 {
+					continue
+				}
 			}
 			var b strings.Builder
 			b.WriteString("Hobbies:\n")
@@ -81,7 +95,11 @@ func BuildContextFromGraphPlan(plan ollama.GraphQueryPlan) (string, error) {
 		case "Skill":
 			skills, err := db.FindSkillsWithFilters(plan.Filters)
 			if err != nil || len(skills) == 0 {
-				continue
+				// Fallback: get all skills if none found
+				skills, err = db.FindSkillsWithFilters(nil)
+				if err != nil || len(skills) == 0 {
+					continue
+				}
 			}
 			var b strings.Builder
 			b.WriteString("Skills:\n")
