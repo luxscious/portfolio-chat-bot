@@ -30,6 +30,6 @@ jobs:
         run: |
           ssh ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} "
             cd /root/portfolio-chat-bot &&
-            git pull origin main &&
+            git pull --rebase origin main &&
             docker compose up --build -d
           "
