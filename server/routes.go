@@ -110,6 +110,7 @@ func storeChatPair(userId, userMsg, assistantMsg string) error {
 func hostCheckMiddleware(allowedHost string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Println("Host header received:", r.Host)
 			if r.Host != allowedHost {
 				http.Error(w, "Forbidden", http.StatusForbidden)
 				return
