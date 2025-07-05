@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/httprate"
 )
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -105,6 +106,19 @@ func storeChatPair(userId, userMsg, assistantMsg string) error {
 	return nil
 }
 
+// Host check middleware
+func hostCheckMiddleware(allowedHost string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.Host != allowedHost {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // RegisterRoutes sets up HTTP routes and middleware
 // ─────────────────────────────────────────────────────────────────────────────
@@ -121,6 +135,10 @@ func RegisterRoutes() http.Handler {
 		AllowedHeaders:   []string{"Accept", "Content-Type"},
 		AllowCredentials: true,
 	}))
+	// Rate limit: 20 requests per minute per IP
+	r.Use(httprate.LimitByIP(20, 1*time.Minute))
+	// Host protection: only allow api.luxscious.dev
+	r.Use(hostCheckMiddleware("api.luxscious.dev"))
 
 	// Routes
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
