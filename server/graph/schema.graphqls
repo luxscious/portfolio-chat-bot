@@ -1,0 +1,101 @@
+type Query {
+  allProjects: [Project!]!
+  project(id: ID!): Project
+
+  allWorkExperiences: [WorkExperience!]!
+  workExperience(id: ID!): WorkExperience
+
+  allEducations: [Education!]!
+  education(id: ID!): Education
+
+  allCourses: [Course!]!
+  course(id: ID!): Course
+
+  allSkills: [Skill!]!
+  allTags: [Tag!]!
+  allHobbies: [Hobby!]!
+  allTeams: [Team!]!
+
+  me: Person
+}
+
+type Person {
+  id: ID!
+  name: String!
+  pronouns: String
+  summary: String
+  location: String
+  birthMonth: String
+  birthYear: Int
+  voiceTone: String
+  background: [String!]!
+  embedding: [Float!]!
+}
+
+type Project {
+  id: ID!
+  name: String!
+  type: String
+  institution: String
+  description: String
+  contributions: [String!]!
+  startDate: String
+  endDate: String
+  featured: Boolean
+  github: String
+  demo: String
+  image: String
+  embedding: [Float!]!
+}
+
+type WorkExperience {
+  id: ID!
+  company: String!
+  title: String!
+  startDate: String
+  endDate: String
+  summary: String
+  featured: Boolean
+  embedding: [Float!]!
+}
+
+type Education {
+  id: ID!
+  institution: String!
+  degree: String
+  field: String
+  level: String
+  startDate: String
+  endDate: String
+  summary: String
+  leadership: [String!]!
+  embedding: [Float!]!
+}
+
+type Course {
+  id: ID!
+  title: String!
+  description: String
+  embedding: [Float!]!
+}
+
+type Skill {
+  name: String!
+}
+
+type Tag {
+  name: String!
+}
+
+type Hobby {
+  name: String!
+  description: String
+  embedding: [Float!]!
+}
+
+type Team {
+  name: String!
+  role: String
+  period: String
+  highlights: [String!]!
+}
