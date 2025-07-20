@@ -10,7 +10,8 @@ function App() {
       const devcycleUserId = import.meta.env.VITE_DEVCYCLE_USER_ID;
       if (!devcycleClientSdkKey || !devcycleUserId) {
         throw new Error(
-          "VITE_DEVCYCLE_CLIENT_SDK_KEY or VITE_DEVCYCLE_USER_ID environment variable is not set"
+          "VITE_DEVCYCLE_CLIENT_SDK_KEY or VITE_DEVCYCLE_USER_ID environment variable is not set",
+          devcycleClientSdkKey + devcycleUserId
         );
       }
       await OpenFeature.setContext({
