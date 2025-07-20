@@ -115,3 +115,18 @@
 body {
   @apply bg-gray-900 text-white;
 }
+
+/* Float Animation - Simple up and down */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.animate-float {
+  animation: float 2.5s ease-in-out infinite;
+}

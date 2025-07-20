@@ -3,7 +3,7 @@ import MessageInput from "@/components/MessageInput";
 import AnimatedIcon from "@/components/ui/animated_icon";
 import { Button } from "@/components/ui/button";
 import { useChat } from "@/hooks/ChatPage";
-import { Github, Linkedin, Minus, Monitor } from "lucide-react";
+import { Github, Linkedin, Monitor } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
@@ -22,7 +22,6 @@ export default function ChatPage() {
 \`\`\`
 `;
   const serverDown = useBooleanFlagValue("server-down", false);
-  console.log(serverDown);
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:gap-0 h-auto lg:h-screen">
@@ -116,7 +115,7 @@ export default function ChatPage() {
 
           <MessageInput
             onSend={sendMessage}
-            isDisabled={isLoading || isTyping}
+            isDisabled={isLoading || isTyping || serverDown}
           />
 
           <p className="text-sm text-gray-400 text-center font-light">
