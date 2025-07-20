@@ -7,6 +7,7 @@ import { Github, Linkedin, Minus, Monitor } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
+import { useBooleanFlagValue } from "@openfeature/react-sdk";
 
 export default function ChatPage() {
   const { messages, sendMessage, isLoading, isTyping, setIsTyping } = useChat();
@@ -20,6 +21,8 @@ export default function ChatPage() {
 🤖 Sure! I've recently built an AI resume chatbot and a smart charging system simulator.
 \`\`\`
 `;
+  const serverDown = useBooleanFlagValue("server-down", false);
+  console.log(serverDown);
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:gap-0 h-auto lg:h-screen">
