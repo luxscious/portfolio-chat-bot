@@ -9,7 +9,8 @@ interface ViteTypeOptions {
 interface ImportMetaEnv {
   readonly VITE_APP_TITLE: string;
   readonly VITE_API_URL: string;
-  // more env variables...
+  readonly VITE_DEVCYCLE_CLIENT_SDK_KEY: string;
+  readonly VITE_DEVCYCLE_USER_ID: string;
 }
 
 interface ImportMeta {
